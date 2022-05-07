@@ -1,6 +1,7 @@
 module Web.View.Registrations.Index where
 import Web.View.Prelude
 import IHP.View.TimeAgo
+import Data.Time.Clock.POSIX
 
 data PlayDate = PlayDate
   { pd_date :: UTCTime
@@ -153,7 +154,8 @@ renderEmpty n = [hsx|
 
 newRegForm :: Integer -> Registration -> Html
 newRegForm n reg = formForWithOptions reg
-  (modify #formClass (<> " form-group mb-2"))
+  (modify #formClass (<> " form-group mb-2") .
+   set #formId ("add-reg-" <> date_id (get #date reg)))
   [hsx|
    {(hiddenField #date) { disableGroup = True }}
    <div class="input-group">
@@ -164,6 +166,7 @@ newRegForm n reg = formForWithOptions reg
      </div>
    </div>
   |]
+  where date_id = tshow . show @Integer . round . utcTimeToPOSIXSeconds
 
 
 fillUp n x xs = xs ++ replicate (n - length xs) x

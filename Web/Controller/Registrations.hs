@@ -6,7 +6,7 @@ import Web.View.Registrations.Index
 import Data.Time.Zones
 
 instance Controller RegistrationsController where
-    action RegistrationsAction = do
+    action RegistrationsAction = autoRefresh do
         upcoming_dates <- upcomingDates >>= mapM (\pd -> do
             let d = get #pd_date pd
             regs <- query @Registration
