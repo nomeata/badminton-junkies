@@ -166,7 +166,7 @@ newRegForm n reg = formForWithOptions reg
      </div>
    </div>
   |]
-  where date_id = tshow . show @Integer . round . utcTimeToPOSIXSeconds
+  where date_id = tshow @Integer . round . utcTimeToPOSIXSeconds
 
 
 fillUp n x xs = xs ++ replicate (n - length xs) x
