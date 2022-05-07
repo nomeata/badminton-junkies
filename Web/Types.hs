@@ -14,3 +14,7 @@ data RegistrationsController
     | CreateRegistrationAction
     | DeleteRegistrationAction { registrationId :: !(Id Registration) }
     deriving (Eq, Show, Data)
+
+newtype LogsController
+    = LogsAction { page :: Maybe Integer }
+    deriving (Eq, Show, Data)

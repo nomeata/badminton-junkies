@@ -2,9 +2,6 @@ module Web.Controller.Registrations where
 
 import Web.Controller.Prelude
 import Web.View.Registrations.Index
-import Web.View.Registrations.New
-import Web.View.Registrations.Edit
-import Web.View.Registrations.Show
 
 import Data.Time.Zones
 

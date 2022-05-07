@@ -6,6 +6,7 @@ import Web.View.Layout (defaultLayout)
 
 -- Controller Imports
 import Web.Controller.Registrations
+import Web.Controller.Logs
 import Web.Controller.Static
 
 instance FrontController WebApplication where
@@ -13,6 +14,7 @@ instance FrontController WebApplication where
         [ startPage RegistrationsAction
         -- Generator Marker
         , parseRoute @RegistrationsController
+        , parseRoute @LogsController
         ]
 
 instance InitControllerContext WebApplication where

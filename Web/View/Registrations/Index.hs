@@ -49,6 +49,7 @@ instance View IndexView where
           <li>Prevent double registration.</li>
           <li>Allow earlier registration for those who have not played the previous day.</li>
           <li>Viewing earlier events.</li>
+          <li>Auto-reload</li>
         </ul>
         </div>
         </div>
@@ -140,7 +141,7 @@ renderReg n reg = [hsx|
 
 renderEmpty :: Integer -> Html
 renderEmpty n = [hsx|
-   <div class="form-group">
+   <div class="form-group mb-2">
    <div class="input-group">
      {renderPosition n}
      <span class={"input-group-text form-control " <> (if isWaitlist n then "" else "bg-white" :: String)}>
@@ -152,7 +153,7 @@ renderEmpty n = [hsx|
 
 newRegForm :: Integer -> Registration -> Html
 newRegForm n reg = formForWithOptions reg
-  (modify #formClass (<> " form-group"))
+  (modify #formClass (<> " form-group mb-2"))
   [hsx|
    {(hiddenField #date) { disableGroup = True }}
    <div class="input-group">

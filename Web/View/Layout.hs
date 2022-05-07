@@ -26,7 +26,7 @@ defaultLayout inner = H.docTypeHtml ! A.lang "en" $ [hsx|
       <h5 class="my-0 mr-md-auto font-weight-normal">Badminton Junkies</h5>
       <nav class="my-2 my-md-0 mr-md-3">
         <a href="{RegistrationsAction}" class={classes ["p-2", "text-dark", ("active", isActivePath RegistrationsAction)]}>Register</a>
-        <a class="p-2 text-dark" href="/Events">Log</a>
+        <a href="{LogsAction Nothing}" class={classes ["p-2", "text-dark", ("active", isActivePath (LogsAction Nothing))]}>Log</a>
       </nav>
       <a class="btn btn-outline-primary" href="#">Log in</a>
     </div>
