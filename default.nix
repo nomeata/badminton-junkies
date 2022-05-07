@@ -5,6 +5,7 @@ let
     };
     haskellEnv = import "${ihp}/NixSupport/default.nix" {
         ihp = ihp;
+        optimized = true;
         haskellDeps = p: with p; [
             cabal-install
             base
