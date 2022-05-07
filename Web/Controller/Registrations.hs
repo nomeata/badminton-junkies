@@ -10,69 +10,60 @@ import Data.Time.Zones
 
 instance Controller RegistrationsController where
     action RegistrationsAction = do
-        upcoming_dates <- upcomingDates >>= mapM (\d -> do
-            regs <- query @Registration |> filterWhere (#date, d) |> fetch
+        upcoming_dates <- upcomingDates >>= mapM (\pd -> do
+            let d = get #pd_date pd
+            regs <- query @Registration
+               |> filterWhere (#date, d)
+               |> fetch
             let formreg = (newRecord @Registration) { date = d }
-            pure (d, regs, formreg)
+            pure (pd, regs, formreg)
          )
         render IndexView { .. }
 
-    action NewRegistrationAction = do
-        let registration = newRecord
-        render NewView { .. }
-
-    action ShowRegistrationAction { registrationId } = do
-        registration <- fetch registrationId
-        render ShowView { .. }
-
-    action EditRegistrationAction { registrationId } = do
-        registration <- fetch registrationId
-        render EditView { .. }
-
-    action UpdateRegistrationAction { registrationId } = do
-        registration <- fetch registrationId
-        registration
-            |> buildRegistration
-            |> ifValid \case
-                Left registration -> render EditView { .. }
-                Right registration -> do
-                    registration <- registration |> updateRecord
-                    setSuccessMessage "Registration updated"
-                    redirectTo EditRegistrationAction { .. }
-
     action CreateRegistrationAction = do
-        let registration = newRecord @Registration
-        registration
-            |> buildRegistration
-            |> ifValid \case
-                Left registration -> do
-                    setErrorMessage "Could not add registration"
-                    redirectTo RegistrationsAction
-                Right registration -> do
-                    registration <- registration |> createRecord
-                    setSuccessMessage "Registration created"
-                    redirectTo RegistrationsAction
+        let reg = newRecord @Registration
+              |> fill @["playerName","date"]
+
+        when (null (get #playerName reg)) $
+            err "No player name given."
+
+        now <- getCurrentTime
+        pds <- upcomingDates
+        case find (\pd -> get #date reg == pd_date pd) pds of
+          Nothing -> err "This playing date is not up for registration"
+          Just pd -> do
+            unless (now < pd_date pd) $
+              err "This playing date has already started"
+            unless (pd_reg_opens pd <= now) $
+              err "This playing date is not yet open for registration"
+
+            reg |> createRecord
+            ok $ "You have registered " <> get #playerName reg <> "."
 
     action DeleteRegistrationAction { registrationId } = do
-        registration <- fetch registrationId
-        deleteRecord registration
-        setSuccessMessage "Registration deleted"
-        redirectTo RegistrationsAction
+        reg <- fetch registrationId
+        deleteRecord reg
+        ok $ "You have unregistered " <> get #playerName reg <> "."
 
-buildRegistration registration = registration
-    |> fill @["playerName","date"]
-    |> validateField #playerName nonEmpty
+err msg = setErrorMessage msg >> redirectTo RegistrationsAction
+ok msg = setSuccessMessage msg >> redirectTo RegistrationsAction
 
-upcomingDates :: IO [UTCTime]
+upcomingDates :: IO [PlayDate]
 upcomingDates = do
     now <- getCurrentTime
     tz <- loadTZFromDB "Europe/Berlin"
     let LocalTime today _ = utcToLocalTimeTZ tz now
     pure $
-     [ localTimeToUTCTZ tz (LocalTime day time)
+     [ PlayDate
+       { pd_date = localTimeToUTCTZ tz (LocalTime day time)
+       , pd_reg_opens = localTimeToUTCTZ tz (LocalTime (reg_days_diff `addDays` day) reg_time)
+       }
      | day <- [today .. 6 `addDays` today]
-     , time <- case dayOfWeek day of
-        Tuesday -> [ TimeOfDay 17 00 00 ]
-        Sunday ->  [ TimeOfDay 14 00 00, TimeOfDay 17 00 00 ]
+     , (time, reg_days_diff, reg_time) <- case dayOfWeek day of
+        Tuesday -> [ (TimeOfDay 17 00 00, -2, TimeOfDay 20 30 00) ]
+        Sunday ->  [ (TimeOfDay 14 00 00, -4, TimeOfDay 20 30 00)
+                   , (TimeOfDay 17 00 00, -4, TimeOfDay 20 30 00) ]
         _      ->  []
      ]
+
+

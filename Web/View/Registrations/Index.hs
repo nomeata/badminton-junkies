@@ -2,8 +2,13 @@ module Web.View.Registrations.Index where
 import Web.View.Prelude
 import IHP.View.TimeAgo
 
+data PlayDate = PlayDate
+  { pd_date :: UTCTime
+  , pd_reg_opens :: UTCTime
+  }
+
 data IndexView = IndexView {
-    upcoming_dates :: [(UTCTime, [Registration], Registration)]
+    upcoming_dates :: [(PlayDate, [Registration], Registration)]
     }
 
 data Entry = R Registration | F Registration | E
@@ -41,11 +46,22 @@ instance View IndexView where
         <ul>
           <li>Event log</li>
           <li>Log-in and user management.</li>
-          <li>Prevent early or late registration.</li>
           <li>Prevent double registration.</li>
           <li>Allow earlier registration for those who have not played the previous day.</li>
           <li>Viewing earlier events.</li>
         </ul>
+        </div>
+        </div>
+       </div>
+
+       <div class="col-lg-4">
+        <div class="card mb-4 box-shadow md-4">
+        <div class="card-header">
+        <h2>Contact</h2>
+        </div>
+        <div class="card-body">
+        <p>This website was built by Joachim Breitner for the Badminton Junkies. In case of problems and questions, <a href="mailto:mail@joachim-breitner.de">send me an e-mail</a> or talk to me on WhatsApp.</p>
+        <p>You can inspect the source code (TODO) and make contributions there!</p>
         </div>
         </div>
        </div>
@@ -56,13 +72,19 @@ instance View IndexView where
                 [ breadcrumbLink "Registrations" RegistrationsAction
                 ]
 
-renderUpcomingDate :: (UTCTime, [Registration], Registration) -> Html
-renderUpcomingDate (time, regs, formreg) = [hsx|
+renderUpcomingDate :: (PlayDate, [Registration], Registration) -> Html
+renderUpcomingDate (pd, regs, formreg) = [hsx|
    <div class="col-lg-4">
    <div class="card mb-4 box-shadow md-4">
    <div class="card-header">
-   <h2 class="my-0">{time |> renderDate}</h2>
+   <h2 class="my-0">{pd |> pd_date |> renderDate}</h2>
    </div>
+   <div class="card-body">
+   <p class="card-text">
+   Start of registration: {pd |> pd_reg_opens |> timeAgo}
+   </p>
+   </div>
+
    <div class="card-body">
    {forEach
      ((map R regs ++ [F formreg]) |> fillUp 9 E |> zip [1..])
