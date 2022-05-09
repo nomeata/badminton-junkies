@@ -34,6 +34,15 @@ instance Controller RegistrationsController where
             unless (pd_reg_opens pd <= now) $
               err "This playing date is not yet open for registration"
 
+            forM_ pds $ \pd ->
+              when (now < get #pd_reg_block_over pd) $ do
+                regs <- query @Registration
+                 |> filterWhere (#date, get #pd_date pd)
+                 |> filterWhere (#playerName, get #playerName reg)
+                 |> fetch
+                unless (null regs) $
+                  err $ get #playerName reg <> " is already registered on another day"
+
             reg |> createRecord
             ok $ "You have registered " <> get #playerName reg <> "."
 
@@ -54,12 +63,13 @@ upcomingDates = do
      [ PlayDate
        { pd_date = localTimeToUTCTZ tz (LocalTime day time)
        , pd_reg_opens = localTimeToUTCTZ tz (LocalTime (reg_days_diff `addDays` day) reg_time)
+       , pd_reg_block_over = localTimeToUTCTZ tz (LocalTime day (TimeOfDay 20 30 00))
        }
      | day <- [today .. 6 `addDays` today]
      , (time, reg_days_diff, reg_time) <- case dayOfWeek day of
-        Tuesday -> [ (TimeOfDay 17 00 00, -2, TimeOfDay 20 30 00) ]
-        Sunday ->  [ (TimeOfDay 14 00 00, -4, TimeOfDay 20 30 00)
-                   , (TimeOfDay 17 00 00, -4, TimeOfDay 20 30 00) ]
+        Tuesday -> [ (TimeOfDay 17 00 00, -6, TimeOfDay 10 30 00) ]
+        Sunday ->  [ (TimeOfDay 14 00 00, -6, TimeOfDay 10 30 00)
+                   , (TimeOfDay 17 00 00, -6, TimeOfDay 10 30 00) ]
         _      ->  []
      ]
 

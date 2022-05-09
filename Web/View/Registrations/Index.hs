@@ -4,8 +4,9 @@ import IHP.View.TimeAgo
 import Data.Time.Clock.POSIX
 
 data PlayDate = PlayDate
-  { pd_date :: UTCTime
-  , pd_reg_opens :: UTCTime
+  { pd_date           :: UTCTime
+  , pd_reg_opens      :: UTCTime
+  , pd_reg_block_over :: UTCTime
   }
 
 data IndexView = IndexView {
@@ -30,6 +31,7 @@ instance View IndexView where
         </div>
         <div class="card-body">
         <p>Enter your name and press ➕ to add yourself to one of the play times. The first 9 members to register get to play, if you add yourself later you are on the waitlist.</p>
+        <p>You can sign up for one play time at a time. If you have played, wait until 20:30 to sign up again.</p>
         <p>To remove yourself, press ➖. People on the waitlist will then move up.</p>
         <p>You <em>can</em> add or remove other people, this is intentional, e.g. to register as a pair, or remove someone else when they asked you to. Please do not abuse this.</p>
         <p>The system keeps a log of registrations and removals.</p>
@@ -47,10 +49,7 @@ instance View IndexView where
         <ul>
           <li>Event log</li>
           <li>Log-in and user management.</li>
-          <li>Prevent double registration.</li>
-          <li>Allow earlier registration for those who have not played the previous day.</li>
           <li>Viewing earlier events.</li>
-          <li>Auto-reload</li>
         </ul>
         </div>
         </div>
@@ -83,7 +82,7 @@ renderUpcomingDate (pd, regs, formreg) = [hsx|
    </div>
    <div class="card-body">
    <p class="card-text">
-   Start of registration: {pd |> pd_reg_opens |> timeAgo}
+   Start of registration: {pd |> pd_reg_opens |> timeAgo}<br/>
    </p>
    </div>
 
