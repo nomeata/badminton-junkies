@@ -62,7 +62,7 @@ instance View IndexView where
         </div>
         <div class="card-body">
         <p>This website was built by Joachim Breitner for the Badminton Junkies. In case of problems and questions, <a href="mailto:mail@joachim-breitner.de">send me an e-mail</a> or talk to me on WhatsApp.</p>
-        <p>You can inspect the source code (TODO) and make contributions there!</p>
+        <p>You can <a href="https://github.com/nomeata/badminton-junkies">inspect the source code</a> and make contributions there!</p>
         </div>
         </div>
        </div>
