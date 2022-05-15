@@ -10,10 +10,10 @@ data PlayDate = PlayDate
   }
 
 data IndexView = IndexView {
-    upcoming_dates :: [(PlayDate, [Registration], Registration)]
+    upcoming_dates :: [(PlayDate, Bool, [Entry])]
     }
 
-data Entry = R Registration | F Registration | E
+data Entry = R Registration | F (Maybe Registration) | E
 
 instance View IndexView where
     html IndexView { .. } = [hsx|
@@ -48,8 +48,9 @@ instance View IndexView where
         <p>This website is work-in-progress. The following features are missing:</p>
         <ul>
           <li>Event history</li>
-          <li>Only logged-in users can registe</li>
+          <li>Only logged-in users can register</li>
           <li>Pre-fill form with user name</li>
+          <li>Auto-complete player names</li>
           <li>Viewing earlier events</li>
         </ul>
         </div>
@@ -74,8 +75,8 @@ instance View IndexView where
                 [ breadcrumbLink "Registrations" RegistrationsAction
                 ]
 
-renderUpcomingDate :: (PlayDate, [Registration], Registration) -> Html
-renderUpcomingDate (pd, regs, formreg) = [hsx|
+renderUpcomingDate :: (PlayDate, Bool, [Entry]) -> Html
+renderUpcomingDate (pd, open, regs) = [hsx|
    <div class="col-lg-4">
    <div class="card mb-4 box-shadow md-4">
    <div class="card-header">
@@ -83,17 +84,22 @@ renderUpcomingDate (pd, regs, formreg) = [hsx|
    </div>
    <div class="card-body">
    <p class="card-text">
-   Start of registration: {pd |> pd_reg_opens |> timeAgo}<br/>
+   {renderRegDate pd open}
    </p>
    </div>
 
    <div class="card-body">
-   {forEach
-     ((map R regs ++ [F formreg]) |> fillUp 9 E |> zip [1..])
-     renderEntry}
+   {forEach (zip [1..] regs) renderEntry}
    </div>
    </div>
    </div>
+|]
+
+renderRegDate pd True = [hsx|
+   Start of registration: {pd |> pd_reg_opens |> timeAgo}<br/>
+|]
+renderRegDate pd False = [hsx|
+   Registration closed
 |]
 
 renderDate :: UTCTime -> Html
@@ -151,9 +157,19 @@ renderEmpty n = [hsx|
    </div>
 |]
 
+newRegForm :: Integer -> Maybe Registration -> Html
+newRegForm n Nothing = [hsx|
+   <div class="form-group mb-2">
+   <div class="input-group">
+     {renderPosition n}
+     <span class={"input-group-text form-control " <> (if isWaitlist n then "" else "bg-white" :: String)}>
+     <a class="" href={NewSessionAction}>Log in</a> to register
+     </span>
+   </div>
+   </div>
+|]
 
-newRegForm :: Integer -> Registration -> Html
-newRegForm n reg = formForWithOptions reg
+newRegForm n (Just reg) = formForWithOptions reg
   (modify #formClass (<> " form-group mb-2") .
    set #formId ("add-reg-" <> date_id (get #date reg)))
   [hsx|

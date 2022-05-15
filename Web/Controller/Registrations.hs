@@ -7,17 +7,30 @@ import Data.Time.Zones
 
 instance Controller RegistrationsController where
     action RegistrationsAction = autoRefresh do
+        now <- getCurrentTime
         upcoming_dates <- upcomingDates >>= mapM (\pd -> do
             let d = get #pd_date pd
             regs <- query @Registration
                |> filterWhere (#date, d)
                |> fetch
-            let formreg = (newRecord @Registration) { date = d }
-            pure (pd, regs, formreg)
+
+            if now < pd_date pd
+            then do
+                formreg <- fmap (\n -> (newRecord @Registration) { date = d, playerName = n} )
+                    <$> getSession "name"
+                let reg_lines = (map R regs ++ [F formreg]) |> fillUp 9 E
+                pure (pd, True, reg_lines)
+            else do
+                let reg_lines = map R regs |> fillUp 9 E
+                pure (pd, False, reg_lines)
          )
         render IndexView { .. }
 
     action CreateRegistrationAction = do
+        authname <- getSession "name" >>= \case
+            Nothing -> err "Please log in first"
+            Just n -> pure n
+
         let reg = newRecord @Registration
               |> fill @["playerName","date"]
 
@@ -47,6 +60,10 @@ instance Controller RegistrationsController where
             ok $ "You have registered " <> get #playerName reg <> "."
 
     action DeleteRegistrationAction { registrationId } = do
+        authname <- getSession "name" >>= \case
+            Nothing -> err "Please log in first"
+            Just n -> pure n
+
         reg <- fetch registrationId
         deleteRecord reg
         ok $ "You have unregistered " <> get #playerName reg <> "."
