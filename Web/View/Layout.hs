@@ -25,10 +25,10 @@ defaultLayout inner = H.docTypeHtml ! A.lang "en" $ [hsx|
     <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
       <h5 class="my-0 mr-md-auto font-weight-normal">Badminton Junkies</h5>
       <nav class="my-2 my-md-0 mr-md-3">
-        <a href="{RegistrationsAction}" class={classes ["p-2", "text-dark", ("active", isActivePath RegistrationsAction)]}>Register</a>
-        <a href="{LogsAction Nothing}" class={classes ["p-2", "text-dark", ("active", isActivePath (LogsAction Nothing))]}>Log</a>
+        <a href={RegistrationsAction} class={classes ["p-2", "text-dark", ("active", isActivePath RegistrationsAction)]}>Play</a>
+        <a href={LogsAction Nothing} class={classes ["p-2", "text-dark", ("active", isActivePath (LogsAction Nothing))]}>History</a>
+        {loginOrOut}
       </nav>
-      <a class="btn btn-outline-primary" href="#">Log in</a>
     </div>
 
     <div class="container">
@@ -37,6 +37,19 @@ defaultLayout inner = H.docTypeHtml ! A.lang "en" $ [hsx|
     </div>
 </body>
 |]
+
+loginOrOut :: Html
+loginOrOut =
+    case fromFrozenContext :: UserFullName of
+        UserFullName Nothing ->
+            [hsx|
+                  <a class="p-2 btn btn-outline-primary" href={NewSessionAction}>Log in</a>
+            |]
+        UserFullName (Just n) ->
+            [hsx|
+                  <span class="p-2">Hello, {n}!</span>
+                  <a class="p-2 btn btn-outline-secondary js-delete js-delete-no-confirm" href={DeleteSessionAction}>Log out</a>
+            |]
 
 -- The 'assetPath' function used below appends a `?v=SOME_VERSION` to the static assets in production
 -- This is useful to avoid users having old CSS and JS files in their browser cache once a new version is deployed

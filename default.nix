@@ -13,6 +13,9 @@ let
             hlint
             p.ihp
             tz
+            wreq
+            tagsoup
+            modern-uri
         ];
         otherDeps = p: with p; [
             # Native dependencies, e.g. imagemagick
