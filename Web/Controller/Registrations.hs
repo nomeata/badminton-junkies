@@ -48,7 +48,9 @@ instance Controller RegistrationsController where
              |> filterWhere (#playerName, get #playerName reg)
              |> fetch
             unless (null regs) $
-              err $ get #playerName reg <> " is already registered on another day"
+                if get #date reg == get #pd_date pd
+                then err $ get #playerName reg <> " is already registered on this day"
+                else err $ get #playerName reg <> " is already registered on another day"
 
         withTransaction $ do
             let name = get #playerName reg
