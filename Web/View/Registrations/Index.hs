@@ -47,9 +47,10 @@ instance View IndexView where
         <div class="card-body">
         <p>This website is work-in-progress. The following features are missing:</p>
         <ul>
-          <li>Event log</li>
-          <li>Log-in and user management.</li>
-          <li>Viewing earlier events.</li>
+          <li>Event history</li>
+          <li>Only logged-in users can registe</li>
+          <li>Pre-fill form with user name</li>
+          <li>Viewing earlier events</li>
         </ul>
         </div>
         </div>
