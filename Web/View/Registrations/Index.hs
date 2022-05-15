@@ -48,8 +48,6 @@ instance View IndexView where
         <p>This website is work-in-progress. The following features are missing:</p>
         <ul>
           <li>Event history</li>
-          <li>Only logged-in users can register</li>
-          <li>Pre-fill form with user name</li>
           <li>Auto-complete player names</li>
           <li>Viewing earlier events</li>
         </ul>
