@@ -83,7 +83,7 @@ renderUpcomingDate (pd, open, regs) = [hsx|
    </div>
 
    <div class="card-body">
-   {forEach (zip [1..] regs) renderEntry}
+   {forEach (zip [1..] regs) (renderEntry open)}
    </div>
    </div>
    </div>
@@ -105,9 +105,9 @@ renderDate t = [hsx|
 |]
 -- TODO: Not timezone safe  (dateTime uses browser timezone, utctDay UTC)
 
-renderEntry (n, R r) = renderReg n r
-renderEntry (n, F r) = newRegForm n r
-renderEntry (n, E) = renderEmpty n
+renderEntry open (n, R r) = renderReg open n r
+renderEntry open (n, F r) = newRegForm n r
+renderEntry open (n, E) = renderEmpty n
 
 isWaitlist n = n > 9
 
@@ -124,8 +124,8 @@ renderPosition n | isWaitlist n = [hsx|
   |]
 
 
-renderReg :: Integer -> Registration -> Html
-renderReg n reg = [hsx|
+renderReg :: Bool -> Integer -> Registration -> Html
+renderReg open n reg = [hsx|
    <div class="form-group mb-2">
    <div class="input-group">
      {renderPosition n}
@@ -133,12 +133,17 @@ renderReg n reg = [hsx|
      {get #playerName reg}
      <!-- <span class="small"> {get #createdAt reg |> timeAgo}</span> -->
      </span>
-     <div class="input-group-append">
-       <a href={DeleteRegistrationAction (get #id reg)} class="js-delete btn btn-secondary" data-confirm={"Do you want to unregister " <> get #playerName reg <> "?"}>➖</a>
-     </div>
+     {renderDelete}
    </div>
    </div>
 |]
+  where
+    renderDelete | open = [hsx|
+         <div class="input-group-append">
+           <a href={DeleteRegistrationAction (get #id reg)} class="js-delete btn btn-secondary" data-confirm={"Do you want to unregister " <> get #playerName reg <> "?"}>➖</a>
+         </div>
+        |]
+                 | otherwise = [hsx| |]
 
 renderEmpty :: Integer -> Html
 renderEmpty n = [hsx|
