@@ -17,9 +17,6 @@ data Entry = R Registration | F (Maybe Registration) | E
 
 instance View IndexView where
     html IndexView { .. } = [hsx|
-      <div class="px-3 py-3 mx-auto">
-       <h1>Badminton Junkies Registration</h1>
-      </div>
       <div class="row">
        {forEach upcoming_dates renderUpcomingDate}
       </div>
@@ -47,9 +44,8 @@ instance View IndexView where
         <div class="card-body">
         <p>This website is work-in-progress. The following features are missing:</p>
         <ul>
-          <li>Event history</li>
           <li>Auto-complete player names</li>
-          <li>Viewing earlier events</li>
+          <li>Viewing earlier line-ups</li>
         </ul>
         </div>
         </div>

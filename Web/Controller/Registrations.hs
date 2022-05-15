@@ -29,7 +29,7 @@ instance Controller RegistrationsController where
     action CreateRegistrationAction = do
         authname <- getSession "name" >>= \case
             Nothing -> err "Please log in first"
-            Just n -> pure n
+            Just n -> pure (n :: Text)
 
         let reg = newRecord @Registration
               |> fill @["playerName","date"]
@@ -37,39 +37,59 @@ instance Controller RegistrationsController where
         when (null (get #playerName reg)) $
             err "No player name given."
 
-        now <- getCurrentTime
+        isPlayingDateOpen (get #date reg)
+
         pds <- upcomingDates
-        case find (\pd -> get #date reg == pd_date pd) pds of
-          Nothing -> err "This playing date is not up for registration"
-          Just pd -> do
-            unless (now < pd_date pd) $
-              err "This playing date has already started"
-            unless (pd_reg_opens pd <= now) $
-              err "This playing date is not yet open for registration"
+        now <- getCurrentTime
+        forM_ pds $ \pd ->
+          when (now < get #pd_reg_block_over pd) $ do
+            regs <- query @Registration
+             |> filterWhere (#date, get #pd_date pd)
+             |> filterWhere (#playerName, get #playerName reg)
+             |> fetch
+            unless (null regs) $
+              err $ get #playerName reg <> " is already registered on another day"
 
-            forM_ pds $ \pd ->
-              when (now < get #pd_reg_block_over pd) $ do
-                regs <- query @Registration
-                 |> filterWhere (#date, get #pd_date pd)
-                 |> filterWhere (#playerName, get #playerName reg)
-                 |> fetch
-                unless (null regs) $
-                  err $ get #playerName reg <> " is already registered on another day"
-
+        withTransaction $ do
+            let name = get #playerName reg
+            date <- prettyTime $ get #date reg
+            newRecord @Log
+                |> set #text [trimming|${authname} registered ${name} for ${date}|]
+                |> createRecord
             reg |> createRecord
-            ok $ "You have registered " <> get #playerName reg <> "."
+        ok $ "You have registered " <> get #playerName reg <> "."
 
     action DeleteRegistrationAction { registrationId } = do
         authname <- getSession "name" >>= \case
             Nothing -> err "Please log in first"
-            Just n -> pure n
+            Just n -> pure (n :: Text)
 
         reg <- fetch registrationId
-        deleteRecord reg
+
+        isPlayingDateOpen (get #date reg)
+
+        withTransaction $ do
+            let name = get #playerName reg
+            date <- prettyTime $ get #date reg
+            newRecord @Log
+                |> set #text [trimming|${authname} removed registration of ${name} for ${date}|]
+                |> createRecord
+            deleteRecord reg
         ok $ "You have unregistered " <> get #playerName reg <> "."
 
-err msg = setErrorMessage msg >> redirectTo RegistrationsAction
-ok msg = setSuccessMessage msg >> redirectTo RegistrationsAction
+isPlayingDateOpen d = do
+    now <- getCurrentTime
+    pds <- upcomingDates
+    case find (\pd -> d == pd_date pd) pds of
+      Nothing -> err "This playing date is not up for registration"
+      Just pd -> do
+        unless (now < pd_date pd) $
+          err "This playing date has already started"
+        unless (pd_reg_opens pd <= now) $
+          err "This playing date is not yet open for registration"
+
+err msg = setErrorMessage msg >> redirectTo RegistrationsAction >> pure undefined
+ok msg = setSuccessMessage msg >> redirectTo RegistrationsAction >> pure undefined
 
 upcomingDates :: IO [PlayDate]
 upcomingDates = do
@@ -90,4 +110,8 @@ upcomingDates = do
         _      ->  []
      ]
 
+prettyTime :: UTCTime -> IO Text
+prettyTime t = do
+    tz <- loadTZFromDB "Europe/Berlin"
+    pure $ t |> utcToLocalTimeTZ tz |> formatTime defaultTimeLocale "%d.%m.%Y, %H:%M" |> cs
 
