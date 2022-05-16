@@ -46,6 +46,7 @@ instance View IndexView where
         <ul>
           <li>Auto-complete player names</li>
           <li>Viewing earlier line-ups</li>
+          <li>Pagination and pruning of log</li>
         </ul>
         </div>
         </div>

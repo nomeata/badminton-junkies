@@ -12,6 +12,7 @@ instance Controller RegistrationsController where
             let d = get #pd_date pd
             regs <- query @Registration
                |> filterWhere (#date, d)
+               |> orderBy #createdAt
                |> fetch
 
             if now < pd_date pd
