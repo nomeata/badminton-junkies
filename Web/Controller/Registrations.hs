@@ -4,6 +4,7 @@ import Web.Controller.Prelude
 import Web.View.Registrations.Index
 
 import Data.Time.Zones
+import Control.Monad.Trans.Except
 
 instance Controller RegistrationsController where
     action RegistrationsAction = autoRefresh do
@@ -17,8 +18,11 @@ instance Controller RegistrationsController where
 
             if now < pd_date pd
             then do
-                formreg <- fmap (\n -> (newRecord @Registration) { date = d, playerName = n} )
-                    <$> getSession "name"
+                formreg <- getSession "name" >>= \case
+                    Nothing -> pure $ Nothing
+                    Just n -> do
+                        n' <- either (const "") (const n) <$> isRegistered n
+                        pure $ Just $ (newRecord @Registration) { date = d, playerName = n' }
                 let reg_lines = (map R regs ++ [F formreg]) |> fillUp 9 E
                 pure (pd, True, reg_lines)
             else do
@@ -40,18 +44,12 @@ instance Controller RegistrationsController where
 
         isPlayingDateOpen (get #date reg)
 
-        pds <- upcomingDates
-        now <- getCurrentTime
-        forM_ pds $ \pd ->
-          when (now < get #pd_reg_block_over pd) $ do
-            regs <- query @Registration
-             |> filterWhere (#date, get #pd_date pd)
-             |> filterWhere (#playerName, get #playerName reg)
-             |> fetch
-            unless (null regs) $
-                if get #date reg == get #pd_date pd
-                then err $ get #playerName reg <> " is already registered on this day"
-                else err $ get #playerName reg <> " is already registered on another day"
+        isRegistered (get #playerName reg) >>= \case
+            Left d | get #date reg == d ->
+                err $ get #playerName reg <> " is already registered on this day"
+                   | otherwise ->
+                err $ get #playerName reg <> " is already registered on another day"
+            Right () -> pure ()
 
         withTransaction $ do
             let name = get #playerName reg
@@ -131,6 +129,19 @@ upcomingDates = do
                    , (TimeOfDay 17 00 00, -6, TimeOfDay 20 30 00) ]
         _      ->  []
      ]
+
+isRegistered :: (?modelContext::ModelContext) => Text -> IO (Either UTCTime ())
+isRegistered name = do
+    pds <- upcomingDates
+    now <- getCurrentTime
+    runExceptT $ forM_ pds $ \pd ->
+      when (now < get #pd_reg_block_over pd) $ do
+        regs <- liftIO $
+          query @Registration
+          |> filterWhere (#date, get #pd_date pd)
+          |> filterWhere (#playerName, name)
+          |> fetch
+        unless (null regs) $ throwE (get #pd_date pd)
 
 prettyTime :: UTCTime -> IO Text
 prettyTime t = do
