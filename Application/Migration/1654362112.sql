@@ -1,0 +1,1 @@
+ALTER TABLE registrations ADD COLUMN has_key BOOLEAN DEFAULT false NOT NULL;
