@@ -12,6 +12,7 @@ data RegistrationsController
     = RegistrationsAction
     | CreateRegistrationAction
     | DeleteRegistrationAction { registrationId :: !(Id Registration) }
+    | SetKeyRegistrationAction { registrationId :: !(Id Registration) }
     deriving (Eq, Show, Data)
 
 newtype LogsController

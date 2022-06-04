@@ -56,9 +56,7 @@ instance Controller RegistrationsController where
         withTransaction $ do
             let name = get #playerName reg
             date <- prettyTime $ get #date reg
-            newRecord @Log
-                |> set #text [trimming|${authname} registered ${name} for ${date}|]
-                |> createRecord
+            logMessage authname [trimming|registered ${name} for ${date}|]
             reg |> createRecord
         ok $ "You have registered " <> get #playerName reg <> "."
 
@@ -74,11 +72,32 @@ instance Controller RegistrationsController where
         withTransaction $ do
             let name = get #playerName reg
             date <- prettyTime $ get #date reg
-            newRecord @Log
-                |> set #text [trimming|${authname} removed registration of ${name} for ${date}|]
-                |> createRecord
+            logMessage authname [trimming|removed registration of ${name} for ${date}|]
             deleteRecord reg
         ok $ "You have unregistered " <> get #playerName reg <> "."
+
+    action SetKeyRegistrationAction { registrationId } = do
+        authname <- getSession "name" >>= \case
+            Nothing -> err "Please log in first"
+            Just n -> pure (n :: Text)
+
+        let hasKey = param @Bool "hasKey"
+        withTransaction $ do
+            reg <- fetch registrationId
+            when (get #hasKey reg == hasKey) $
+                err $ "Nothing to do"
+            let name = get #playerName reg
+            date <- prettyTime $ get #date reg
+            logMessage authname $
+                if hasKey
+                then [trimming|notes that ${name} has a key on ${date}|]
+                else [trimming|notes that ${name} has no key on ${date}|]
+            reg |> set #hasKey hasKey |> updateRecord
+        ok "Noted!"
+
+
+logMessage authname txt = do
+    newRecord @Log |> set #text (authname <> " " <> txt) |> createRecord
 
 isPlayingDateOpen d = do
     now <- getCurrentTime

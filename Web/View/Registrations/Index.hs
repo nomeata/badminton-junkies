@@ -134,14 +134,29 @@ renderReg open n reg = [hsx|
      {get #playerName reg}
      <!-- <span class="small"> {get #createdAt reg |> timeAgo}</span> -->
      </span>
+     {renderRacket}
      {renderDelete}
    </div>
    </div>
 |]
   where
+    renderRacket | get #hasKey reg = renderRacketOrKey "🔑" "False" "no key"
+                 | otherwise       = renderRacketOrKey "🏸" "True" "a key"
+
+    renderRacketOrKey symbol otherVal confirm = [hsx|
+         <div class="input-group-append">
+           <form method="POST" action={SetKeyRegistrationAction (get #id reg)}>
+            <input type="hidden" name="hasKey" value={otherVal::Text}/>
+            <button type="submit" class="btn btn-light border" title={"Does " <> get #playerName reg <> " have " <> confirm <> "?"}>
+             {symbol :: Text}
+            </button>
+           </form>
+         </div>
+        |]
+
     renderDelete | open = [hsx|
          <div class="input-group-append">
-           <a href={DeleteRegistrationAction (get #id reg)} class="js-delete btn btn-secondary" data-confirm={"Do you want to unregister " <> get #playerName reg <> "?"}>➖</a>
+           <a href={DeleteRegistrationAction (get #id reg)} class="js-delete btn btn-light border" data-confirm={"Do you want to unregister " <> get #playerName reg <> "?"}>➖</a>
          </div>
         |]
                  | otherwise = [hsx| |]
