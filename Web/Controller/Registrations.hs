@@ -9,6 +9,9 @@ import Control.Monad.Trans.Except
 instance Controller RegistrationsController where
     action RegistrationsAction = autoRefresh do
         now <- getCurrentTime
+
+        signed_up_for <- findSignUp
+
         upcoming_dates <- upcomingDates >>= mapM (\pd -> do
             let d = get #pd_date pd
             regs <- query @Registration
@@ -31,10 +34,30 @@ instance Controller RegistrationsController where
          )
         render IndexView { .. }
 
+    action RegisterAction = do
+        needAuth
+
+        let date = param @UTCTime "date"
+        Just name <- currentName
+
+        isPlayingDateOpen date
+        isRegistered name >>= \case
+            Left d | date == d ->
+                err $ name <> " is already registered on this day"
+                   | otherwise ->
+                err $ name <> " is already registered on another day"
+            Right () -> pure ()
+
+        withTransaction $ do
+            date' <- prettyTime date
+            logMessage [trimming|registered ${name} for ${date'}|]
+            newRecord @Registration |> set #playerName name |> set #date date|> createRecord
+        ok $ "You have registered " <> name <> "."
+
+
+
     action CreateRegistrationAction = do
-        sd <- fromContext @(Maybe SessionData) >>= \case
-            Nothing -> err "Please log in first"
-            Just sd -> pure sd
+        needAuth
 
         let reg = newRecord @Registration
               |> fill @["playerName","date"]
@@ -59,9 +82,7 @@ instance Controller RegistrationsController where
         ok $ "You have registered " <> get #playerName reg <> "."
 
     action DeleteRegistrationAction { registrationId } = do
-        sd <- fromContext @(Maybe SessionData) >>= \case
-            Nothing -> err "Please log in first"
-            Just sd -> pure sd
+        needAuth
 
         reg <- fetch registrationId
 
@@ -75,9 +96,7 @@ instance Controller RegistrationsController where
         ok $ "You have unregistered " <> get #playerName reg <> "."
 
     action SetKeyRegistrationAction { registrationId } = do
-        sd <- case fromFrozenContext :: Maybe SessionData of
-            Nothing -> err "Please log in first"
-            Just sd -> pure sd
+        needAuth
 
         let hasKey = param @Bool "hasKey"
         withTransaction $ do
@@ -132,6 +151,33 @@ upcomingDates = do
                    , (TimeOfDay 17 00 00, -6, TimeOfDay 20 30 00) ]
         _      ->  []
      ]
+
+needAuth :: (?context::ControllerContext) => IO ()
+needAuth = fromContext @(Maybe SessionData) >>= \case
+    Just sd -> pure ()
+    Nothing -> err "Please log in first"
+
+currentName :: (?context::ControllerContext) => IO (Maybe Text)
+currentName = fromContext @(Maybe SessionData) >>= \case
+    Just sd -> pure $ Just $ fromMaybe (nickname sd) (actingFor sd)
+    Nothing -> pure Nothing
+
+findSignUp :: (?modelContext::ModelContext, ?context::ControllerContext) => IO (Maybe Registration)
+findSignUp = do
+    currentName >>= \case
+        Nothing -> pure Nothing
+        Just name -> do
+            pds <- upcomingDates
+            now <- getCurrentTime
+            fmap (either Just (const Nothing)) $ runExceptT $ forM_ pds $ \pd ->
+              when (now < get #pd_reg_block_over pd) $ do
+                regs <- liftIO $
+                  query @Registration
+                  |> filterWhere (#date, get #pd_date pd)
+                  |> filterWhere (#playerName, name)
+                  |> fetchOneOrNothing
+                forEach regs $ throwE
+
 
 isRegistered :: (?modelContext::ModelContext) => Text -> IO (Either UTCTime ())
 isRegistered name = do

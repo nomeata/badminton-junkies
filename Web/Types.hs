@@ -11,6 +11,7 @@ data StaticController = WelcomeAction deriving (Eq, Show, Data)
 data RegistrationsController
     = RegistrationsAction
     | CreateRegistrationAction
+    | RegisterAction
     | DeleteRegistrationAction { registrationId :: !(Id Registration) }
     | SetKeyRegistrationAction { registrationId :: !(Id Registration) }
     deriving (Eq, Show, Data)

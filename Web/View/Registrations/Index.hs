@@ -9,14 +9,27 @@ data PlayDate = PlayDate
   , pd_reg_block_over :: UTCTime
   }
 
-data IndexView = IndexView {
-    upcoming_dates :: [(PlayDate, Bool, [Entry])]
-    }
+data IndexView = IndexView
+  { signed_up_for :: Maybe Registration
+  , upcoming_dates :: [(PlayDate, Bool, [Entry])]
+  }
 
 data Entry = R Registration | F (Maybe Registration) | E
 
 instance View IndexView where
     html IndexView { .. } = [hsx|
+      <div class="row">
+       <div class="col-lg-4">
+        <div class="card mb-4 box-shadow md-4">
+         <div class="card-header">
+          <h2>Sign-up</h2>
+         </div>
+         <div class="card-body">
+          {signUpForm signed_up_for upcoming_dates}
+         </div>
+        </div>
+       </div>
+      </div>
       <div class="row">
        {forEach upcoming_dates renderUpcomingDate}
       </div>
@@ -70,6 +83,39 @@ instance View IndexView where
             breadcrumb = renderBreadcrumb
                 [ breadcrumbLink "Registrations" RegistrationsAction
                 ]
+
+signUpForm :: Maybe Registration -> [(PlayDate, Bool, [Entry])] -> Html
+signUpForm Nothing upcoming_dates = [hsx|
+   {forEach upcoming_dates signUpButton}
+  |]
+  where
+  signUpButton :: (PlayDate, Bool, [Entry]) -> Html
+  signUpButton (pd, True, regs) = [hsx|
+   <form method="POST" class="form-group mb-2" action={RegisterAction}>
+   <div class="input-group">
+      <input type="hidden" name="date" value={inputValue (pd_date pd)}/>
+      <button class="form-control btn-primary">{pd |> pd_date |> renderDate}</button>
+   </div>
+   </form>
+   |]
+  signUpButton (pd, False, regs) = [hsx|
+   <div class="form-group mb-2">
+   <div class="input-group">
+     <button class="form-control" disabled="True" title="Registration closed.">{pd |> pd_date |> renderDate}</button>
+   </div>
+   </div>
+   |]
+
+
+signUpForm (Just reg) upcoming_dates = [hsx|
+   <p>You are registered for {get #date reg|>renderDate}.</p>
+   <p> {done} </p>
+   <a href={DeleteRegistrationAction (get #id reg)} class="js-delete form-control btn btn-warning border" data-confirm={"Do you want to unregister " <> get #playerName reg <> "?"}>Unregister</a>
+   |]
+  where
+    done = case [pd | (pd,_,_) <- upcoming_dates, pd_date pd == get #date reg] of
+        pd : _ -> [hsx|You can sign up again at {pd_reg_block_over pd |> renderDate}.|]
+        _ -> ""
 
 renderUpcomingDate :: (PlayDate, Bool, [Entry]) -> Html
 renderUpcomingDate (pd, open, regs) = [hsx|
