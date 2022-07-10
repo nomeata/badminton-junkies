@@ -19,18 +19,8 @@ instance Controller RegistrationsController where
                |> orderBy #createdAt
                |> fetch
 
-            if now < pd_date pd
-            then do
-                formreg <- fromContext @(Maybe SessionData) >>= \case
-                    Nothing -> pure $ Nothing
-                    Just (SessionData {nickname = n }) -> do
-                        n' <- either (const "") (const n) <$> isRegistered n
-                        pure $ Just $ (newRecord @Registration) { date = d, playerName = n' }
-                let reg_lines = (map R regs ++ [F formreg]) |> fillUp 9 E
-                pure (pd, True, reg_lines)
-            else do
-                let reg_lines = map R regs |> fillUp 9 E
-                pure (pd, False, reg_lines)
+            let reg_lines = map R regs |> fillUp 9 E
+            pure (pd, now < pd_date pd, reg_lines)
          )
         render IndexView { .. }
 
@@ -53,33 +43,6 @@ instance Controller RegistrationsController where
             logMessage [trimming|registered ${name} for ${date'}|]
             newRecord @Registration |> set #playerName name |> set #date date|> createRecord
         ok $ "You have registered " <> name <> "."
-
-
-
-    action CreateRegistrationAction = do
-        needAuth
-
-        let reg = newRecord @Registration
-              |> fill @["playerName","date"]
-
-        when (null (get #playerName reg)) $
-            err "No player name given."
-
-        isPlayingDateOpen (get #date reg)
-
-        isRegistered (get #playerName reg) >>= \case
-            Left d | get #date reg == d ->
-                err $ get #playerName reg <> " is already registered on this day"
-                   | otherwise ->
-                err $ get #playerName reg <> " is already registered on another day"
-            Right () -> pure ()
-
-        withTransaction $ do
-            let name = get #playerName reg
-            date <- prettyTime $ get #date reg
-            logMessage [trimming|registered ${name} for ${date}|]
-            reg |> createRecord
-        ok $ "You have registered " <> get #playerName reg <> "."
 
     action DeleteRegistrationAction { registrationId } = do
         needAuth
@@ -162,7 +125,8 @@ currentName = fromContext @(Maybe SessionData) >>= \case
     Just sd -> pure $ Just $ fromMaybe (nickname sd) (actingFor sd)
     Nothing -> pure Nothing
 
-findSignUp :: (?modelContext::ModelContext, ?context::ControllerContext) => IO (Maybe Registration)
+findSignUp :: (?modelContext::ModelContext, ?context::ControllerContext) =>
+    IO (Maybe (Registration, PlayDate, Bool))
 findSignUp = do
     currentName >>= \case
         Nothing -> pure Nothing
@@ -176,7 +140,7 @@ findSignUp = do
                   |> filterWhere (#date, get #pd_date pd)
                   |> filterWhere (#playerName, name)
                   |> fetchOneOrNothing
-                forEach regs $ throwE
+                forEach regs $ \reg -> throwE (reg, pd, now < pd_date pd)
 
 
 isRegistered :: (?modelContext::ModelContext) => Text -> IO (Either UTCTime ())

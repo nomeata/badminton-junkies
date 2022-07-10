@@ -10,11 +10,11 @@ data PlayDate = PlayDate
   }
 
 data IndexView = IndexView
-  { signed_up_for :: Maybe Registration
+  { signed_up_for :: Maybe (Registration, PlayDate, Bool)
   , upcoming_dates :: [(PlayDate, Bool, [Entry])]
   }
 
-data Entry = R Registration | F (Maybe Registration) | E
+data Entry = R Registration | E
 
 instance View IndexView where
     html IndexView { .. } = [hsx|
@@ -25,6 +25,7 @@ instance View IndexView where
           <h2>Sign-up</h2>
          </div>
          <div class="card-body">
+          {actWarning}
           {signUpForm signed_up_for upcoming_dates}
          </div>
         </div>
@@ -40,11 +41,11 @@ instance View IndexView where
         <h2>Instructions</h2>
         </div>
         <div class="card-body">
-        <p>Enter your name and press ➕ to add yourself to one of the play times. The first 9 members to register get to play, if you add yourself later you are on the waitlist.</p>
-        <p>You can sign up for one play time at a time. If you have just played, wait until 20:30 before signing up for the next play time. Please do not cheat by using different names.</p>
-        <p>To unregister yourself, press ➖. People on the waitlist will then move up. Please also message the group to tell them that a spot is now open.</p>
+        <p>You can sign up with the big buttons on top. The first 9 members to register get to play, if you add yourself later you are on the waitlist.</p>
+        <p>You can sign up for one play time at a time. If you have just played, wait until 20:30 before signing up for the next play time.</p>
+        <p>You can unregister. People on the waitlist will then move up. Please also message the group to tell them that a spot is now open.</p>
         <p>To indicate that you have a key, click on  🏸 to turn it into a 🔑.</p>
-        <p>You <em>can</em> add or remove other people! This is intentional, e.g. to register as a pair, or remove someone else when they asked you to. Please do not abuse this.</p>
+        <p>To change your nickname or register other people, click the 🛠 button in the top-right corner.</p>
         <p>The system keeps a log of registrations and removals.</p>
         </div>
         </div>
@@ -59,8 +60,9 @@ instance View IndexView where
         <p>This website is work-in-progress. The following features are missing:</p>
         <ul>
           <li>Auto-complete player names</li>
-          <li>Viewing earlier line-ups</li>
+          <li>Viewing past line-ups</li>
           <li>Pagination and pruning of log</li>
+          <li>Who has the current key?</li>
         </ul>
         </div>
         </div>
@@ -84,7 +86,15 @@ instance View IndexView where
                 [ breadcrumbLink "Registrations" RegistrationsAction
                 ]
 
-signUpForm :: Maybe Registration -> [(PlayDate, Bool, [Entry])] -> Html
+actWarning :: Html
+actWarning = case fromFrozenContext :: Maybe SessionData of
+    Just (SessionData {actingFor = Just n}) -> [hsx|
+      <p><strong class="text-danger">Warning:</strong> You are acting for {n}</p>
+     |]
+    _ -> [hsx||]
+
+signUpForm :: Maybe (Registration, PlayDate, Bool) -> [(PlayDate, Bool, [Entry])] -> Html
+
 signUpForm Nothing upcoming_dates = [hsx|
    {forEach upcoming_dates signUpButton}
   |]
@@ -106,16 +116,18 @@ signUpForm Nothing upcoming_dates = [hsx|
    </div>
    |]
 
-
-signUpForm (Just reg) upcoming_dates = [hsx|
+signUpForm (Just (reg, pd, open)) _ = [hsx|
    <p>You are registered for {get #date reg|>renderDate}.</p>
-   <p> {done} </p>
-   <a href={DeleteRegistrationAction (get #id reg)} class="js-delete form-control btn btn-warning border" data-confirm={"Do you want to unregister " <> get #playerName reg <> "?"}>Unregister</a>
+   <p>You can sign up again at {pd_reg_block_over pd |> renderDate}.</p>
+   {delete}
    |]
   where
-    done = case [pd | (pd,_,_) <- upcoming_dates, pd_date pd == get #date reg] of
-        pd : _ -> [hsx|You can sign up again at {pd_reg_block_over pd |> renderDate}.|]
-        _ -> ""
+    delete | open = [hsx|
+        <a href={DeleteRegistrationAction (get #id reg)}
+           class="js-delete form-control btn btn-warning border"
+           data-confirm="Do you want to unregister?">Unregister</a>
+      |]
+           | otherwise = [hsx| |]
 
 renderUpcomingDate :: (PlayDate, Bool, [Entry]) -> Html
 renderUpcomingDate (pd, open, regs) = [hsx|
@@ -154,7 +166,6 @@ renderDate t = [hsx|
 -- TODO: Not timezone safe  (dateTime uses browser timezone, utctDay UTC)
 
 renderEntry open (n, R r) = renderReg open n r
-renderEntry open (n, F r) = newRegForm n r
 renderEntry open (n, E) = renderEmpty n
 
 isWaitlist n = n > 9
@@ -182,7 +193,6 @@ renderReg open n reg = [hsx|
      <!-- <span class="small"> {get #createdAt reg |> timeAgo}</span> -->
      </span>
      {renderRacket}
-     {renderDelete}
    </div>
    </div>
 |]
@@ -201,13 +211,6 @@ renderReg open n reg = [hsx|
          </div>
         |]
 
-    renderDelete | open = [hsx|
-         <div class="input-group-append">
-           <a href={DeleteRegistrationAction (get #id reg)} class="js-delete btn btn-light border" data-confirm={"Do you want to unregister " <> get #playerName reg <> "?"}>➖</a>
-         </div>
-        |]
-                 | otherwise = [hsx| |]
-
 renderEmpty :: Integer -> Html
 renderEmpty n = [hsx|
    <div class="form-group mb-2">
@@ -218,33 +221,5 @@ renderEmpty n = [hsx|
    </div>
    </div>
 |]
-
-newRegForm :: Integer -> Maybe Registration -> Html
-newRegForm n Nothing = [hsx|
-   <div class="form-group mb-2">
-   <div class="input-group">
-     {renderPosition n}
-     <span class={"input-group-text form-control " <> (if isWaitlist n then "" else "bg-white" :: String)}>
-     <a class="" href={EditSessionAction}>Log in</a> to register
-     </span>
-   </div>
-   </div>
-|]
-
-newRegForm n (Just reg) = formForWithOptions reg
-  (modify #formClass (<> " form-group mb-2") .
-   set #formId ("add-reg-" <> date_id (get #date reg)))
-  [hsx|
-   {(hiddenField #date) { disableGroup = True }}
-   <div class="input-group">
-     {renderPosition n}
-     {(textField #playerName) { placeholder = "Name of player to add", required = True, disableLabel = True, disableGroup = True }}
-     <div class="input-group-append">
-      {submitButton { label = "➕" } }
-     </div>
-   </div>
-  |]
-  where date_id = tshow @Integer . round . utcTimeToPOSIXSeconds
-
 
 fillUp n x xs = xs ++ replicate (n - length xs) x
