@@ -18,19 +18,7 @@ data Entry = R Registration | E
 
 instance View IndexView where
     html IndexView { .. } = [hsx|
-      <div class="row">
-       <div class="col-lg-4">
-        <div class="card mb-4 box-shadow md-4">
-         <div class="card-header">
-          <h2>Sign-up</h2>
-         </div>
-         <div class="card-body">
-          {actWarning}
-          {signUpForm signed_up_for upcoming_dates}
-         </div>
-        </div>
-       </div>
-      </div>
+      {signUpRow signed_up_for upcoming_dates}
       <div class="row">
        {forEach upcoming_dates renderUpcomingDate}
       </div>
@@ -41,7 +29,7 @@ instance View IndexView where
         <h2>Instructions</h2>
         </div>
         <div class="card-body">
-        <p>You can sign up with the big buttons on top. The first 9 members to register get to play, if you add yourself later you are on the waitlist.</p>
+        <p>Once you have logged in, you can sign up with the big buttons on top. The first 9 members to register get to play, if you add yourself later you are on the waitlist.</p>
         <p>You can sign up for one play time at a time. If you have just played, wait until 20:30 before signing up for the next play time.</p>
         <p>You can unregister. People on the waitlist will then move up. Please also message the group to tell them that a spot is now open.</p>
         <p>To indicate that you have a key, click on  🏸 to turn it into a 🔑.</p>
@@ -92,6 +80,28 @@ actWarning = case fromFrozenContext :: Maybe SessionData of
       <p><strong class="text-danger">Warning:</strong> You are acting for {n}</p>
      |]
     _ -> [hsx||]
+
+
+signUpRow :: Maybe (Registration, PlayDate, Bool) -> [(PlayDate, Bool, [Entry])] -> Html
+signUpRow signed_up_for upcoming_dates
+    | Nothing <- fromFrozenContext @(Maybe SessionData)
+    = [hsx| |]
+    | otherwise
+    = [hsx|
+      <div class="row">
+       <div class="col-lg-4">
+        <div class="card mb-4 box-shadow md-4">
+         <div class="card-header">
+          <h2>Sign-up</h2>
+         </div>
+         <div class="card-body">
+          {actWarning}
+          {signUpForm signed_up_for upcoming_dates}
+         </div>
+        </div>
+       </div>
+      </div>
+    |]
 
 signUpForm :: Maybe (Registration, PlayDate, Bool) -> [(PlayDate, Bool, [Entry])] -> Html
 
