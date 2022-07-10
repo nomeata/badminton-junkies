@@ -28,4 +28,8 @@ instance InitControllerContext WebApplication where
 initUser :: (?context :: ControllerContext, ?modelContext :: ModelContext) => IO ()
 initUser = do
     mbn <- getSession @Text "name"
-    putContext (UserFullName mbn)
+    mni <- getSession @Text "nickname"
+    maf <- getSession @Text "acting_for"
+    putContext $ case mbn of
+        Nothing -> Nothing
+        Just n ->  Just $ SessionData n (fromMaybe n mni) maf

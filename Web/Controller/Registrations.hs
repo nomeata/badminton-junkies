@@ -18,9 +18,9 @@ instance Controller RegistrationsController where
 
             if now < pd_date pd
             then do
-                formreg <- getSession "name" >>= \case
+                formreg <- fromContext @(Maybe SessionData) >>= \case
                     Nothing -> pure $ Nothing
-                    Just n -> do
+                    Just (SessionData {nickname = n }) -> do
                         n' <- either (const "") (const n) <$> isRegistered n
                         pure $ Just $ (newRecord @Registration) { date = d, playerName = n' }
                 let reg_lines = (map R regs ++ [F formreg]) |> fillUp 9 E
@@ -32,9 +32,9 @@ instance Controller RegistrationsController where
         render IndexView { .. }
 
     action CreateRegistrationAction = do
-        authname <- getSession "name" >>= \case
+        sd <- fromContext @(Maybe SessionData) >>= \case
             Nothing -> err "Please log in first"
-            Just n -> pure (n :: Text)
+            Just sd -> pure sd
 
         let reg = newRecord @Registration
               |> fill @["playerName","date"]
@@ -54,14 +54,14 @@ instance Controller RegistrationsController where
         withTransaction $ do
             let name = get #playerName reg
             date <- prettyTime $ get #date reg
-            logMessage authname [trimming|registered ${name} for ${date}|]
+            logMessage [trimming|registered ${name} for ${date}|]
             reg |> createRecord
         ok $ "You have registered " <> get #playerName reg <> "."
 
     action DeleteRegistrationAction { registrationId } = do
-        authname <- getSession "name" >>= \case
+        sd <- fromContext @(Maybe SessionData) >>= \case
             Nothing -> err "Please log in first"
-            Just n -> pure (n :: Text)
+            Just sd -> pure sd
 
         reg <- fetch registrationId
 
@@ -70,14 +70,14 @@ instance Controller RegistrationsController where
         withTransaction $ do
             let name = get #playerName reg
             date <- prettyTime $ get #date reg
-            logMessage authname [trimming|removed registration of ${name} for ${date}|]
+            logMessage [trimming|removed registration of ${name} for ${date}|]
             deleteRecord reg
         ok $ "You have unregistered " <> get #playerName reg <> "."
 
     action SetKeyRegistrationAction { registrationId } = do
-        authname <- getSession "name" >>= \case
+        sd <- case fromFrozenContext :: Maybe SessionData of
             Nothing -> err "Please log in first"
-            Just n -> pure (n :: Text)
+            Just sd -> pure sd
 
         let hasKey = param @Bool "hasKey"
         withTransaction $ do
@@ -86,7 +86,7 @@ instance Controller RegistrationsController where
                 err $ "Nothing to do"
             let name = get #playerName reg
             date <- prettyTime $ get #date reg
-            logMessage authname $
+            logMessage $
                 if hasKey
                 then [trimming|notes that ${name} has a key on ${date}|]
                 else [trimming|notes that ${name} has no key on ${date}|]
@@ -94,8 +94,11 @@ instance Controller RegistrationsController where
         ok "Noted!"
 
 
-logMessage authname txt = do
-    newRecord @Log |> set #text (authname <> " " <> txt) |> createRecord
+logMessage txt = do
+    sd <- fromContext >>= \case
+        Nothing -> error "This should not happen"
+        Just sd -> pure sd
+    newRecord @Log |> set #text (nickname sd <> " " <> txt) |> createRecord
 
 isPlayingDateOpen d = do
     now <- getCurrentTime

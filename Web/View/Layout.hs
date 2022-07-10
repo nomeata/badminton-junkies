@@ -40,16 +40,22 @@ defaultLayout inner = H.docTypeHtml ! A.lang "en" $ [hsx|
 
 loginOrOut :: Html
 loginOrOut =
-    case fromFrozenContext :: UserFullName of
-        UserFullName Nothing ->
+    case fromFrozenContext :: Maybe SessionData of
+        Nothing ->
             [hsx|
-                  <a class="p-2 btn btn-outline-primary" href={NewSessionAction}>Log in</a>
+                  <a class="p-2 btn btn-outline-primary" href={EditSessionAction}>Log in</a>
             |]
-        UserFullName (Just n) ->
-            [hsx|
-                  <span class="p-2">Hello, {n}!</span>
-                  <a class="p-2 btn btn-outline-secondary js-delete js-delete-no-confirm" href={DeleteSessionAction}>Log out</a>
-            |]
+        Just sd -> case actingFor sd of
+            Just n' ->
+                [hsx|
+                      <span class="p-2">Hello, <s>{nickname sd}</s> {n'}!</span>
+                      <a class="p-2 btn btn-outline-primary" href={EditSessionAction}>🛠</a>
+                |]
+            Nothing ->
+                [hsx|
+                      <span class="p-2">Hello, {nickname sd}!</span>
+                      <a class="p-2 btn btn-outline-primary" href={EditSessionAction}>🛠</a>
+                |]
 
 -- The 'assetPath' function used below appends a `?v=SOME_VERSION` to the static assets in production
 -- This is useful to avoid users having old CSS and JS files in their browser cache once a new version is deployed

@@ -179,7 +179,7 @@ newRegForm n Nothing = [hsx|
    <div class="input-group">
      {renderPosition n}
      <span class={"input-group-text form-control " <> (if isWaitlist n then "" else "bg-white" :: String)}>
-     <a class="" href={NewSessionAction}>Log in</a> to register
+     <a class="" href={EditSessionAction}>Log in</a> to register
      </span>
    </div>
    </div>

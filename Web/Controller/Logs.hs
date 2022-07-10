@@ -5,9 +5,9 @@ import Web.View.Logs.Index
 
 instance Controller LogsController where
     action LogsAction {..} = do
-        authname <- getSession "name" >>= \case
+        fromContext @(Maybe SessionData) >>= \case
             Nothing -> err "Please log in first"
-            Just n -> pure (n :: Text)
+            Just sd -> pure ()
 
         entries <- query @Log |> orderByDesc #createdAt |> fetch
         render (IndexView { .. })

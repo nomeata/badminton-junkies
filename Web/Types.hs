@@ -20,9 +20,12 @@ newtype LogsController
     deriving (Eq, Show, Data)
 
 data SessionsController
-    = NewSessionAction
-    | CreateSessionAction
+    = CreateSessionAction
     | DeleteSessionAction
+    | EditSessionAction
+    | ChangeNameAction
+    | ChangeActingAction
+    | StopActingAction
     deriving (Eq, Show, Data)
 
 data LoginData = LoginData { email :: Text, password :: Text, meta :: MetaBag}
@@ -44,4 +47,9 @@ instance SetField "meta" LoginData MetaBag where
         LoginData email password newValue
 
 
-newtype UserFullName = UserFullName (Maybe Text)
+data SessionData = SessionData {
+    fullName :: Text,
+    nickname :: Text,
+    actingFor :: Maybe Text
+    }
+
