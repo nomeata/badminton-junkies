@@ -49,7 +49,6 @@ instance View IndexView where
         <ul>
           <li>Who has the current key?</li>
           <li>Auto-complete player names</li>
-          <li>Check membership status before registering</li>
           <li>Viewing past line-ups</li>
           <li>Pagination and pruning of log</li>
         </ul>
