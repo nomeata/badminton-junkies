@@ -13,6 +13,9 @@ import Data.ByteString.UTF8 as BSU
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 
+badmintonJunkiesId :: Integer
+badmintonJunkiesId = 42249
+
 buhlLogin :: Text -> Text -> IO (Either Text Text)
 buhlLogin username password = runExceptT $ do
     r <- liftIO $ post "https://www.buhl.de/mein-buhlkonto/wp-admin/admin-ajax.php"
@@ -62,6 +65,12 @@ buhlLogin username password = runExceptT $ do
         r ^? responseBody . key "user" . key "firstName" . _String
     last_name <- orErr "accounts endpoint did not reveal last name" $
         r ^? responseBody . key "user" . key "lastName" . _String
+
+    clubs <- orErr "accounts endpoint did not lists clubs" $
+        r ^? responseBody . key "data" . key "clubs" . _Array
+
+    unless (Just badmintonJunkiesId `elem` fmap (\c -> c ^? key "id" . _Integer) clubs) $
+        throwE "It looks like you are not a member yet."
 
     return $ first_name <> " " <> last_name
 
