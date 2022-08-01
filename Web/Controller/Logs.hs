@@ -9,7 +9,11 @@ instance Controller LogsController where
             Nothing -> err "Please log in first"
             Just sd -> pure ()
 
-        entries <- query @Log |> orderByDesc #createdAt |> fetch
+        (entryQ, pagination) <- query @Log
+            |> orderByDesc #createdAt
+            |> paginateWithOptions (defaultPaginationOptions |> set #maxItems 10)
+
+        entries <- entryQ |> fetch
         render (IndexView { .. })
 
 err msg = setErrorMessage msg >> redirectTo RegistrationsAction >> pure undefined

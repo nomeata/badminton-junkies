@@ -2,12 +2,16 @@ module Web.View.Logs.Index where
 import Web.View.Prelude
 import IHP.View.TimeAgo
 
-data IndexView = IndexView {
-    entries :: [Log]
+data IndexView = IndexView
+    { entries :: [Log]
+    , pagination :: Pagination
     }
 
 instance View IndexView where
     html IndexView { .. } = [hsx|
+    <div>
+    {renderPagination pagination}
+    </div>
     <table class="table">
     <tbody>
     {forEach entries renderEntry}
