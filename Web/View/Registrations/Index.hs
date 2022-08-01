@@ -47,7 +47,6 @@ instance View IndexView where
         <div class="card-body">
         <p>This website is work-in-progress. The following features are missing:</p>
         <ul>
-          <li>Who has the current key?</li>
           <li>Auto-complete player names</li>
           <li>Viewing past line-ups</li>
         </ul>
