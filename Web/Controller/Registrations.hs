@@ -39,9 +39,16 @@ instance Controller RegistrationsController where
             Right () -> pure ()
 
         withTransaction $ do
+            hasKey <- query @Keyholder
+                |> filterWhere (#holder, name)
+                |> fetchExists
             date' <- prettyTime date
             logMessage [trimming|registered ${name} for ${date'}|]
-            newRecord @Registration |> set #playerName name |> set #date date|> createRecord
+            newRecord @Registration
+                |> set #playerName name
+                |> set #date date
+                |> set #hasKey hasKey
+                |> createRecord
         ok $ "You have registered " <> name <> "."
 
     action DeleteRegistrationAction { registrationId } = do
