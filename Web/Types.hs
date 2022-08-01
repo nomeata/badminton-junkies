@@ -28,6 +28,12 @@ data SessionsController
     | StopActingAction
     deriving (Eq, Show, Data)
 
+data KeyHoldersController
+    = KeyHoldersAction
+    | ChangeKeyHolder
+    deriving (Eq, Show, Data)
+
+
 data LoginData = LoginData { email :: Text, password :: Text, meta :: MetaBag}
     deriving (Eq, Show)
 instance Record LoginData where
