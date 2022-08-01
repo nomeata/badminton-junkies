@@ -11,7 +11,7 @@ instance Controller LogsController where
 
         (entryQ, pagination) <- query @Log
             |> orderByDesc #createdAt
-            |> paginateWithOptions (defaultPaginationOptions |> set #maxItems 10)
+            |> paginate
 
         entries <- entryQ |> fetch
         render (IndexView { .. })
