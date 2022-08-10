@@ -176,8 +176,6 @@ renderDate t = [hsx|
 renderEntry open (n, R r) = renderReg open n r
 renderEntry open (n, E) = renderEmpty n
 
-isWaitlist n = n > 9
-
 renderPosition :: Integer -> Html
 renderPosition n | isWaitlist n = [hsx|
      <div class="input-group-prepend">

@@ -38,7 +38,7 @@ instance Controller RegistrationsController where
                 err $ name <> " is already registered on another day"
             Right () -> pure ()
 
-        withTransaction $ do
+        pos <- withTransaction $ do
             hasKey <- query @Keyholder
                 |> filterWhere (#holder, name)
                 |> fetchExists
@@ -49,7 +49,18 @@ instance Controller RegistrationsController where
                 |> set #date date
                 |> set #hasKey hasKey
                 |> createRecord
-        ok $ "You have registered " <> name <> "."
+
+            -- now calculate position
+            regs <- query @Registration
+               |> filterWhere (#date, date)
+               |> orderBy #createdAt
+               |> fetch
+            let Just pos = succ <$> findIndex (\r -> get #playerName r == name) regs
+            return pos
+
+        if isWaitlist pos
+          then err $ "You have put " <> name <> " on the waitlist."
+          else ok $ "You have registered " <> name <> "."
 
     action DeleteRegistrationAction { registrationId } = do
         needAuth
