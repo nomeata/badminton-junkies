@@ -2,5 +2,9 @@ module Application.Helper.Both where
 
 import IHP.ControllerPrelude
 
-isWaitlist n = n > 9
+playSlots :: Int
+playSlots = 1
+
+isWaitlist :: Int -> Bool
+isWaitlist n = n > playSlots
 

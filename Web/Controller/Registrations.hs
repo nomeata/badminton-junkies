@@ -18,9 +18,7 @@ instance Controller RegistrationsController where
                |> filterWhere (#date, d)
                |> orderBy #createdAt
                |> fetch
-
-            let reg_lines = map R regs |> fillUp 9 E
-            pure (pd, now < pd_date pd, reg_lines)
+            pure (pd, now < pd_date pd, regs)
          )
         render IndexView { .. }
 
