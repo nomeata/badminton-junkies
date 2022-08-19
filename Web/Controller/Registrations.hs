@@ -94,10 +94,6 @@ instance Controller RegistrationsController where
         ok "Noted!"
 
 
-logMessage txt = do
-    sd <- fromMaybe (error "This should not happen") <$> fromContext
-    newRecord @Log |> set #text (userName (user sd) <> " " <> txt) |> createRecord
-
 isPlayingDateOpen d = do
     now <- getCurrentTime
     pds <- upcomingDates

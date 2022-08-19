@@ -14,6 +14,7 @@ instance Controller LogsController where
             |> paginate
 
         entries <- entryQ |> fetch
+
         render (IndexView { .. })
 
 err msg = setErrorMessage msg >> redirectTo RegistrationsAction >> pure undefined

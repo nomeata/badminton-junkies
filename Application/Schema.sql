@@ -11,7 +11,8 @@ CREATE INDEX registrations_created_at_index ON registrations (created_at);
 CREATE TABLE logs (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
-    text TEXT NOT NULL
+    text TEXT NOT NULL,
+    user_id UUID DEFAULT NULL
 );
 CREATE INDEX logs_created_at_index ON logs (created_at);
 CREATE TABLE keyholders (
@@ -26,4 +27,6 @@ CREATE TABLE users (
     nickname TEXT DEFAULT NULL,
     last_login TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
 );
+CREATE INDEX logs_user_id_index ON logs (user_id);
+ALTER TABLE logs ADD CONSTRAINT logs_ref_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE NO ACTION;
 ALTER TABLE registrations ADD CONSTRAINT registrations_ref_player_user FOREIGN KEY (player_user) REFERENCES users (id) ON DELETE NO ACTION;
