@@ -26,7 +26,8 @@ instance Controller RegistrationsController where
         needAuth
 
         let date = param @UTCTime "date"
-        Just name <- currentName
+        sd <- fromMaybe (error "should not happen") <$> currentSD
+        let name = actingName sd
 
         isPlayingDateOpen date
         isRegistered name >>= \case
@@ -44,6 +45,7 @@ instance Controller RegistrationsController where
             logMessage [trimming|registered ${name} for ${date'}|]
             newRecord @Registration
                 |> set #playerName name
+                |> set #playerUser (if isJust (actingFor sd) then Nothing else Just (user sd |> get #id))
                 |> set #date date
                 |> set #hasKey hasKey
                 |> createRecord
@@ -93,10 +95,8 @@ instance Controller RegistrationsController where
 
 
 logMessage txt = do
-    sd <- fromContext >>= \case
-        Nothing -> error "This should not happen"
-        Just sd -> pure sd
-    newRecord @Log |> set #text (nickname sd <> " " <> txt) |> createRecord
+    sd <- fromMaybe (error "This should not happen") <$> fromContext
+    newRecord @Log |> set #text (userName (user sd) <> " " <> txt) |> createRecord
 
 isPlayingDateOpen d = do
     now <- getCurrentTime
@@ -136,17 +136,19 @@ needAuth = fromContext @(Maybe SessionData) >>= \case
     Just sd -> pure ()
     Nothing -> err "Please log in first"
 
-currentName :: (?context::ControllerContext) => IO (Maybe Text)
-currentName = fromContext @(Maybe SessionData) >>= \case
-    Just sd -> pure $ Just $ fromMaybe (nickname sd) (actingFor sd)
-    Nothing -> pure Nothing
+currentSD :: (?context::ControllerContext) => IO (Maybe SessionData)
+currentSD = fromContext @(Maybe SessionData)
+
+actingName :: SessionData -> Text
+actingName sd = fromMaybe (userName (user sd)) (actingFor sd)
 
 findSignUp :: (?modelContext::ModelContext, ?context::ControllerContext) =>
     IO (Maybe (Registration, PlayDate, Bool))
 findSignUp = do
-    currentName >>= \case
+    currentSD >>= \case
         Nothing -> pure Nothing
-        Just name -> do
+        Just sd -> do
+            let name = actingName sd
             pds <- upcomingDates
             now <- getCurrentTime
             fmap (either Just (const Nothing)) $ runExceptT $ forM_ pds $ \pd ->

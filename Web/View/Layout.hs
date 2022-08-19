@@ -49,12 +49,12 @@ loginOrOut =
         Just sd -> case actingFor sd of
             Just n' ->
                 [hsx|
-                      <span class="p-2">Hello, <s>{nickname sd}</s> {n'}!</span>
+                      <span class="p-2">Hello, <s>{userName (user sd)}</s> {n'}!</span>
                       <a class="p-2 btn btn-outline-primary" href={EditSessionAction}>🛠</a>
                 |]
             Nothing ->
                 [hsx|
-                      <span class="p-2">Hello, {nickname sd}!</span>
+                      <span class="p-2">Hello, {userName (user sd)}!</span>
                       <a class="p-2 btn btn-outline-primary" href={EditSessionAction}>🛠</a>
                 |]
 

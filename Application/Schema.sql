@@ -4,7 +4,8 @@ CREATE TABLE registrations (
     player_name TEXT NOT NULL,
     date TIMESTAMP WITH TIME ZONE NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
-    has_key BOOLEAN DEFAULT false NOT NULL
+    has_key BOOLEAN DEFAULT false NOT NULL,
+    player_user UUID DEFAULT NULL
 );
 CREATE INDEX registrations_created_at_index ON registrations (created_at);
 CREATE TABLE logs (
@@ -18,3 +19,11 @@ CREATE TABLE keyholders (
     key_number INT NOT NULL UNIQUE,
     holder TEXT NOT NULL
 );
+CREATE TABLE users (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY NOT NULL,
+    buhl_id TEXT NOT NULL UNIQUE,
+    fullname TEXT NOT NULL,
+    nickname TEXT DEFAULT NULL,
+    last_login TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
+);
+ALTER TABLE registrations ADD CONSTRAINT registrations_ref_player_user FOREIGN KEY (player_user) REFERENCES users (id) ON DELETE NO ACTION;

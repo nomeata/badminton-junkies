@@ -1,0 +1,1084 @@
+{
+   "authToken" : "Bearer eyxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx8tjw",
+   "data" : {
+      "clubMembers" : [
+         {
+            "activeMembershipBeginAt" : null,
+            "activeMembershipEndAt" : null,
+            "address" : {
+               "addressLine1" : "XXXXXXXXXXXXXXXX 30c",
+               "addressLine2" : "",
+               "city" : "Freiburg",
+               "countryId" : "2",
+               "zip" : "79106"
+            },
+            "anniversaryDateForSort" : "2000-01-03T09:13:01.282Z",
+            "balance" : "0",
+            "bankConnections" : [],
+            "birthday" : "YYYY-MM-DDT00:00:00.000Z",
+            "birthdayForSort" : "2000-03-03T09:13:01.282Z",
+            "birthdayMonth" : 2,
+            "clubId" : 42249,
+            "createdAt" : "2022-05-13T09:10:09.274Z",
+            "email" : "mail@xxxxxxxxxxxxxxxxxxx",
+            "fax" : "",
+            "financeApiCreditorId" : null,
+            "financeApiDebitorId" : "23d0f94f-dfad-4cfe-b63a-29a1f19c1c1a",
+            "firstName" : "Joachim",
+            "formOfAddressId" : null,
+            "gender" : 0,
+            "id" : 6331928,
+            "invitationState" : 0,
+            "invitedAt" : null,
+            "isHonoured" : false,
+            "isPerson" : 1,
+            "lastName" : "Breitner",
+            "maritalStatus" : null,
+            "memberId" : 35,
+            "membershipBeginAt" : "2020-01-01T00:00:00.000Z",
+            "membershipEndAt" : null,
+            "mobilePhone" : "+49XXXXXXXXXXX",
+            "mobilePhoneNotes" : "",
+            "notes" : null,
+            "notifications" : {
+               "byEmail" : false,
+               "byPhone" : false,
+               "byPost" : false,
+               "bySms" : false,
+               "interval" : 0,
+               "intervalText" : ""
+            },
+            "originalClubMemberId" : null,
+            "phone" : null,
+            "phone2" : null,
+            "phone2Notes" : "",
+            "phoneNotes" : "",
+            "pictureExists" : false,
+            "placeholderColor" : "#26A69A",
+            "rateAmount" : "0",
+            "rateBegin" : null,
+            "rateEnd" : null,
+            "state" : 0,
+            "staticClubSubAreas" : [],
+            "staticHistories" : [],
+            "superMemberId" : null,
+            "titleId" : null,
+            "type" : 1,
+            "updatedAt" : "2022-06-30T09:13:01.282Z",
+            "useUnionReport" : true,
+            "userId" : 72868,
+            "userUpdatedAt" : null,
+            "website" : ""
+         }
+      ],
+      "clubSettings" : [
+         {
+            "clubId" : 42249,
+            "createdAt" : "2022-05-13T09:10:09.541Z",
+            "id" : 25803,
+            "smallEntrepreneur" : true,
+            "updatedAt" : "2022-05-13T09:10:09.541Z"
+         }
+      ],
+      "clubs" : [
+         {
+            "_links" : [
+               {
+                  "href" : "/protected/mv365/clubs/42249",
+                  "method" : "GET",
+                  "rel" : "self"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249",
+                  "method" : "PATCH",
+                  "rel" : "update"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249",
+                  "method" : "DELETE",
+                  "rel" : "delete_club"
+               },
+               {
+                  "href" : "/protected/club/42249/requested-members",
+                  "method" : "GET",
+                  "rel" : "requested_members"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/areas",
+                  "method" : "GET",
+                  "rel" : "areas"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/areas",
+                  "method" : "POST",
+                  "rel" : "create_area"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/mergemember",
+                  "method" : "PATCH",
+                  "rel" : "merge_member"
+               },
+               {
+                  "href" : "/mv365/clubs/42249/logo",
+                  "method" : "GET",
+                  "rel" : "fetch_clublogo"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/logo",
+                  "method" : "POST",
+                  "rel" : "update_clublogo"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/data",
+                  "method" : "POST",
+                  "rel" : "update_data_from_user"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/logo",
+                  "method" : "DELETE",
+                  "rel" : "delete_clublogo"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/subareas",
+                  "method" : "GET",
+                  "rel" : "subareas"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/subareas",
+                  "method" : "POST",
+                  "rel" : "create_subarea"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/rates",
+                  "method" : "GET",
+                  "rel" : "rates"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/rates",
+                  "method" : "POST",
+                  "rel" : "save_rates"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/member-categories",
+                  "method" : "GET",
+                  "rel" : "member_categories"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/member-categories",
+                  "method" : "POST",
+                  "rel" : "create_member_category"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/contact-categories",
+                  "method" : "GET",
+                  "rel" : "contact_categories"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/contact-categories",
+                  "method" : "POST",
+                  "rel" : "create_contact_category"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/individualfields",
+                  "method" : "GET",
+                  "rel" : "individualfields"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/individualfields",
+                  "method" : "POST",
+                  "rel" : "save_individualfields"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/anniversaries",
+                  "method" : "GET",
+                  "rel" : "anniversaries"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/anniversaries",
+                  "method" : "POST",
+                  "rel" : "save_anniversaries"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/members",
+                  "method" : "GET",
+                  "rel" : "collection_members"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/selected-members",
+                  "method" : "POST",
+                  "rel" : "collection_selected_members"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/filteredmembers",
+                  "method" : "POST",
+                  "rel" : "filtered_collection_members"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/filteredmemberscount",
+                  "method" : "POST",
+                  "rel" : "filtered_collection_members_count"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/contacts",
+                  "method" : "GET",
+                  "rel" : "collection_contacts"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/membersbyids",
+                  "method" : "GET",
+                  "rel" : "members_by_ids"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/filteredcontacts",
+                  "method" : "POST",
+                  "rel" : "filtered_collection_contacts"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/filteredcontactscount",
+                  "method" : "POST",
+                  "rel" : "filtered_collection_contacts_count"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/members",
+                  "method" : "POST",
+                  "rel" : "create_member"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/delete-members",
+                  "method" : "POST",
+                  "rel" : "delete_members"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/data",
+                  "method" : "GET",
+                  "rel" : "club_master_data"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/members/next-number",
+                  "method" : "GET",
+                  "rel" : "next_number"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/members/lists/default",
+                  "method" : "GET",
+                  "rel" : "default_member_list"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/contacts/lists/default",
+                  "method" : "GET",
+                  "rel" : "default_contact_list"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/lists",
+                  "method" : "GET",
+                  "rel" : "collection_lists"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/members/lists",
+                  "method" : "GET",
+                  "rel" : "collection_member_lists"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/contacts/lists",
+                  "method" : "GET",
+                  "rel" : "collection_contact_lists"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/members/lists/own",
+                  "method" : "GET",
+                  "rel" : "collection_own_member_lists"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/contacts/lists/own",
+                  "method" : "GET",
+                  "rel" : "collection_own_contact_lists"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/members/lists",
+                  "method" : "POST",
+                  "rel" : "create_list"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/clubuser/lists",
+                  "method" : "GET",
+                  "rel" : "club_user_list"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/clubmember/lists",
+                  "method" : "GET",
+                  "rel" : "club_member_list"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/members/lists/members",
+                  "method" : "POST",
+                  "rel" : "add_members_to_lists"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/import-info",
+                  "method" : "GET",
+                  "rel" : "data_import_info"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/import-upload",
+                  "method" : "POST",
+                  "rel" : "data_import_upload_file"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/import-finalize",
+                  "method" : "POST",
+                  "rel" : "data_import_create_members"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/conversations",
+                  "method" : "GET",
+                  "rel" : "conversations"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/conversations/archived",
+                  "method" : "GET",
+                  "rel" : "archived_conversations"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/conversations/messages",
+                  "method" : "POST",
+                  "rel" : "send_message"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/conversations",
+                  "method" : "POST",
+                  "rel" : "create_conversation"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/search",
+                  "method" : "POST",
+                  "rel" : "search"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/people-search",
+                  "method" : "POST",
+                  "rel" : "people_search"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/people-search-payment-type",
+                  "method" : "POST",
+                  "rel" : "people_search_payment_type"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/managers",
+                  "method" : "POST",
+                  "rel" : "invite_manager"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/owner/set",
+                  "method" : "POST",
+                  "rel" : "set_owner"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/events",
+                  "method" : "GET",
+                  "rel" : "events"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/events",
+                  "method" : "POST",
+                  "rel" : "create_event"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/event-categories",
+                  "method" : "POST",
+                  "rel" : "event_categories"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/invite-members",
+                  "method" : "POST",
+                  "rel" : "invite_members"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/events/filter",
+                  "method" : "GET",
+                  "rel" : "events_filter"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/selected",
+                  "method" : "POST",
+                  "rel" : "selected"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/subscription",
+                  "method" : "GET",
+                  "rel" : "club_subscription"
+               },
+               {
+                  "href" : "/protected/club/42249/updated-members",
+                  "method" : "GET",
+                  "rel" : "updated_members"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/compare_data",
+                  "method" : "POST",
+                  "rel" : "compare_member_data"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/setting/permissions",
+                  "method" : "GET",
+                  "rel" : "get_permission"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/setting/permissions",
+                  "method" : "POST",
+                  "rel" : "set_permission"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/setting/bank-connections",
+                  "method" : "GET",
+                  "rel" : "bank_connections"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/setting/bank-connections",
+                  "method" : "POST",
+                  "rel" : "bank_connections"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/join",
+                  "method" : "POST",
+                  "rel" : "request_club_join"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/text-templates/payment",
+                  "method" : "POST",
+                  "rel" : "payment_templates"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/text-templates/payment",
+                  "method" : "GET",
+                  "rel" : "payment_templates"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/search",
+                  "method" : "GET",
+                  "rel" : "collection_clubs"
+               },
+               {
+                  "href" : "/protected/mv365/clubs/42249/subscription",
+                  "method" : "PUT",
+                  "rel" : "update_subscription"
+               }
+            ],
+            "about" : null,
+            "address" : {
+               "addressLine1" : "xxxxxxxxxxxxx",
+               "addressLine2" : "c/o xxxxxxxxxxxxx",
+               "city" : "Freiburg",
+               "zip" : "79114"
+            },
+            "bankConnections" : [
+               {
+                  "bank" : "",
+                  "bic" : "GENODEF1SLR",
+                  "holder" : "Badminton Junkies e. V.",
+                  "iban" : "DE23830654080004200896",
+                  "paypalLink" : ""
+               }
+            ],
+            "categoryId" : 2,
+            "clubImport" : null,
+            "createdAt" : "2022-05-13T09:10:09.253Z",
+            "creator" : {
+               "email" : "mail@xxxxxxxxxxxxxxxxxxx",
+               "firstName" : "Joachim",
+               "lastName" : "Breitner",
+               "userId" : 72868
+            },
+            "creatorAgreesToRepresentTheClub" : true,
+            "creatorAgreesToRepresentTheClubAt" : "2022-05-13T09:10:09.252Z",
+            "creatorIsAdClient" : false,
+            "creditorId" : null,
+            "deletedAt" : null,
+            "donationLink" : null,
+            "email" : "b.junkies@gmx.de",
+            "fax" : null,
+            "features" : [
+               {
+                  "allowed" : false,
+                  "name" : "Push Notification Feature"
+               },
+               {
+                  "allowed" : true,
+                  "name" : "club-member_document-upload"
+               }
+            ],
+            "financeApiTenantId" : "b5245c6e-2743-49b5-942d-ae7513bb094b",
+            "financeLoggingStartedAt" : null,
+            "groupGlobalId" : null,
+            "headOffice" : "",
+            "id" : 42249,
+            "isClubListsMigrated" : null,
+            "isDemo" : false,
+            "managers" : [
+               {
+                  "_links" : [],
+                  "clubId" : 42249,
+                  "clubMember" : {
+                     "_links" : [
+                        {
+                           "href" : "/protected/mv365/clubs/42249/members/6331928",
+                           "method" : "GET",
+                           "rel" : "self"
+                        },
+                        {
+                           "href" : "/protected/mv365/clubs/42249/members/6331928",
+                           "method" : "PATCH",
+                           "rel" : "update"
+                        },
+                        {
+                           "href" : "/protected/mv365/clubs/42249/members/6331928/images",
+                           "method" : "POST",
+                           "rel" : "update_image"
+                        },
+                        {
+                           "href" : "/protected/mv365/clubs/42249/members/6331928/images",
+                           "method" : "DELETE",
+                           "rel" : "delete_image"
+                        },
+                        {
+                           "href" : "/protected/mv365/clubs/42249/members/6331928",
+                           "method" : "DELETE",
+                           "rel" : "delete"
+                        },
+                        {
+                           "href" : "/protected/mv365/clubs/42249/members/6331928",
+                           "method" : "DELETE",
+                           "rel" : "delete_member"
+                        },
+                        {
+                           "href" : "/protected/mv365/clubs/42249/members/6331928/individualfield",
+                           "method" : "PATCH",
+                           "rel" : "update_individual_field"
+                        },
+                        {
+                           "href" : "/protected/mv365/clubs/42249/members/sepamandate/reference/validate",
+                           "method" : "POST",
+                           "rel" : "validate_sepamandate_reference"
+                        },
+                        {
+                           "href" : "/protected/mv365/clubs/42249/members/6331928/account-data/",
+                           "method" : "GET",
+                           "rel" : "account_data"
+                        },
+                        {
+                           "href" : "/protected/mv365/clubs/42249/members/6331928/updateMember",
+                           "method" : "POST",
+                           "rel" : "update_data_from_user"
+                        },
+                        {
+                           "href" : "/mv365/clubs/42249/members/6331928/image?type=large",
+                           "method" : "GET",
+                           "rel" : "image_xlarge"
+                        },
+                        {
+                           "href" : "/mv365/clubs/42249/members/6331928/image?type=large",
+                           "method" : "GET",
+                           "rel" : "image_large"
+                        },
+                        {
+                           "href" : "/mv365/clubs/42249/members/6331928/image?type=medium",
+                           "method" : "GET",
+                           "rel" : "image_medium"
+                        },
+                        {
+                           "href" : "/mv365/clubs/42249/members/6331928/image?type=small",
+                           "method" : "GET",
+                           "rel" : "image_small"
+                        },
+                        {
+                           "href" : "/mv365/clubs/42249/members/6331928/image?type=small",
+                           "method" : "GET",
+                           "rel" : "image_thumb"
+                        },
+                        {
+                           "href" : "/mv365/clubs/42249/members/6331928/image?type=large",
+                           "method" : "GET",
+                           "rel" : "image_header"
+                        },
+                        {
+                           "href" : "/protected/mv365/clubs/42249/members/6331928/invite",
+                           "method" : "POST",
+                           "rel" : "invite"
+                        }
+                     ],
+                     "canBeInvited" : true,
+                     "clubId" : 42249,
+                     "email" : "mail@xxxxxxxxxxxxxxxxxxx",
+                     "firstName" : "Joachim",
+                     "id" : 6331928,
+                     "lastName" : "Breitner",
+                     "pictureExists" : false,
+                     "placeholderColor" : "#26A69A"
+                  },
+                  "clubMemberId" : 6331928,
+                  "createdAt" : "2022-05-13T09:10:09.288Z",
+                  "id" : 74724,
+                  "invitationId" : null,
+                  "invitationSendAt" : null,
+                  "isSelected" : true,
+                  "lastLogin" : "2022-08-19T12:27:43.153Z",
+                  "permission" : {
+                     "activeModules" : {
+                        "dashboard" : {
+                           "all" : true
+                        },
+                        "finance" : {
+                           "all" : true
+                        },
+                        "lists" : {
+                           "all" : true
+                        },
+                        "members" : {
+                           "all" : true,
+                           "contactList" : true,
+                           "lists" : true,
+                           "memberList" : true
+                        },
+                        "organization" : {
+                           "all" : true
+                        },
+                        "search" : {
+                           "all" : true
+                        },
+                        "settings" : {
+                           "all" : true
+                        }
+                     },
+                     "clubId" : 42249,
+                     "clubUserId" : 74724,
+                     "createdAt" : "2022-05-13T09:10:09.291Z",
+                     "role" : "owner",
+                     "updatedAt" : "2022-05-13T09:10:09.291Z"
+                  },
+                  "updatedAt" : "2022-08-19T12:27:43.153Z",
+                  "userId" : 72868
+               },
+               {
+                  "_links" : [
+                     {
+                        "href" : "/protected/mv365/clubs/42249/managers/74882",
+                        "method" : "DELETE",
+                        "rel" : "delete_manager"
+                     }
+                  ],
+                  "clubId" : 42249,
+                  "clubMember" : {
+                     "_links" : [
+                        {
+                           "href" : "/protected/mv365/clubs/42249/members/6331973",
+                           "method" : "GET",
+                           "rel" : "self"
+                        },
+                        {
+                           "href" : "/protected/mv365/clubs/42249/members/6331973",
+                           "method" : "PATCH",
+                           "rel" : "update"
+                        },
+                        {
+                           "href" : "/protected/mv365/clubs/42249/members/6331973/images",
+                           "method" : "POST",
+                           "rel" : "update_image"
+                        },
+                        {
+                           "href" : "/protected/mv365/clubs/42249/members/6331973/images",
+                           "method" : "DELETE",
+                           "rel" : "delete_image"
+                        },
+                        {
+                           "href" : "/protected/mv365/clubs/42249/members/6331973",
+                           "method" : "DELETE",
+                           "rel" : "delete"
+                        },
+                        {
+                           "href" : "/protected/mv365/clubs/42249/members/6331973",
+                           "method" : "DELETE",
+                           "rel" : "delete_member"
+                        },
+                        {
+                           "href" : "/protected/mv365/clubs/42249/members/6331973/individualfield",
+                           "method" : "PATCH",
+                           "rel" : "update_individual_field"
+                        },
+                        {
+                           "href" : "/protected/mv365/clubs/42249/members/sepamandate/reference/validate",
+                           "method" : "POST",
+                           "rel" : "validate_sepamandate_reference"
+                        },
+                        {
+                           "href" : "/protected/mv365/clubs/42249/members/6331973/account-data/",
+                           "method" : "GET",
+                           "rel" : "account_data"
+                        },
+                        {
+                           "href" : "/protected/mv365/clubs/42249/members/6331973/updateMember",
+                           "method" : "POST",
+                           "rel" : "update_data_from_user"
+                        },
+                        {
+                           "href" : "/mv365/clubs/42249/members/6331973/image?type=large",
+                           "method" : "GET",
+                           "rel" : "image_xlarge"
+                        },
+                        {
+                           "href" : "/mv365/clubs/42249/members/6331973/image?type=large",
+                           "method" : "GET",
+                           "rel" : "image_large"
+                        },
+                        {
+                           "href" : "/mv365/clubs/42249/members/6331973/image?type=medium",
+                           "method" : "GET",
+                           "rel" : "image_medium"
+                        },
+                        {
+                           "href" : "/mv365/clubs/42249/members/6331973/image?type=small",
+                           "method" : "GET",
+                           "rel" : "image_small"
+                        },
+                        {
+                           "href" : "/mv365/clubs/42249/members/6331973/image?type=small",
+                           "method" : "GET",
+                           "rel" : "image_thumb"
+                        },
+                        {
+                           "href" : "/mv365/clubs/42249/members/6331973/image?type=large",
+                           "method" : "GET",
+                           "rel" : "image_header"
+                        },
+                        {
+                           "href" : "/protected/mv365/clubs/42249/members/6331973/invite",
+                           "method" : "POST",
+                           "rel" : "invite"
+                        }
+                     ],
+                     "canBeInvited" : true,
+                     "clubId" : 42249,
+                     "email" : "xxxxxxxxxxxxxxxxxxxxxxxxxx",
+                     "firstName" : "XXXX",
+                     "id" : 6331973,
+                     "lastName" : "XXXXXXXX",
+                     "pictureExists" : false,
+                     "placeholderColor" : "#FFCA28"
+                  },
+                  "clubMemberId" : 6331973,
+                  "createdAt" : "2022-05-16T07:27:28.982Z",
+                  "id" : 74882,
+                  "invitationId" : null,
+                  "invitationSendAt" : "2022-05-18T08:31:07.941Z",
+                  "isSelected" : true,
+                  "lastLogin" : "2022-08-19T12:27:00.677Z",
+                  "permission" : {
+                     "activeModules" : {
+                        "dashboard" : {
+                           "all" : true
+                        },
+                        "finance" : {
+                           "all" : true
+                        },
+                        "lists" : {
+                           "all" : true
+                        },
+                        "members" : {
+                           "all" : true,
+                           "contactList" : true,
+                           "lists" : true,
+                           "memberList" : true
+                        },
+                        "organization" : {
+                           "all" : true
+                        },
+                        "search" : {
+                           "all" : true
+                        },
+                        "settings" : {
+                           "all" : true
+                        }
+                     },
+                     "clubId" : 42249,
+                     "clubUserId" : 74882,
+                     "createdAt" : "2022-05-16T07:27:28.988Z",
+                     "role" : "manager",
+                     "updatedAt" : "2022-05-18T08:31:07.944Z"
+                  },
+                  "updatedAt" : "2022-08-19T12:27:00.677Z",
+                  "userId" : 73336
+               }
+            ],
+            "memberCount" : 60,
+            "mobilePhone" : null,
+            "name" : "Badminton Junkies e.V.",
+            "name2" : "",
+            "number" : null,
+            "performanceLoggingActive" : null,
+            "phone" : "+4917640229212",
+            "phone2" : null,
+            "registered" : true,
+            "shopLink" : null,
+            "showEmail" : true,
+            "showPhone" : true,
+            "subscription" : {
+               "activeModules" : [],
+               "begin" : "2022-05-24T00:00:00.000Z",
+               "billingData" : {
+                  "bankAccountHolder" : "",
+                  "bankAccountIBAN" : "",
+                  "city" : "",
+                  "firstName" : "",
+                  "lastName" : "",
+                  "paymentStoreId" : "",
+                  "storeToken" : "",
+                  "street" : "",
+                  "zipCode" : ""
+               },
+               "clubAccountId" : 73846,
+               "clubId" : "42249",
+               "createdAt" : "2022-05-13T09:10:09.347Z",
+               "end" : null,
+               "expired" : false,
+               "id" : "42624",
+               "limitations" : {
+                  "members" : 100
+               },
+               "locked" : false,
+               "lockedAt" : null,
+               "marketplaceSubscriptionId" : "L22MS00000012745",
+               "paymentInterval" : "YEARLY",
+               "paymentType" : "none",
+               "pricePerInterval" : "120",
+               "storeToken" : null,
+               "subscriptionType" : {
+                  "activeModules" : [],
+                  "createdAt" : "2018-12-05T11:16:29.718Z",
+                  "description" : "MEINVEREIN XS",
+                  "durationPeriod" : "MONTH",
+                  "durationValue" : 1,
+                  "id" : 2,
+                  "limitations" : {
+                     "members" : 100
+                  },
+                  "name" : "xs",
+                  "pricePerDuration" : "10",
+                  "pricing" : [
+                     {
+                        "duration" : "MONTH",
+                        "interval" : "MONTHLY",
+                        "price" : 12
+                     },
+                     {
+                        "duration" : "YEAR",
+                        "interval" : "YEARLY",
+                        "price" : 10
+                     }
+                  ],
+                  "public" : true,
+                  "title" : "XS",
+                  "updatedAt" : "2020-06-29T12:59:03.155Z"
+               },
+               "subscriptionTypeId" : 2,
+               "updatedAt" : "2022-05-25T09:07:36.406Z"
+            },
+            "subscriptionState" : {
+               "expired" : false,
+               "limitReached" : false,
+               "locked" : false
+            },
+            "typeId" : 1,
+            "updatedAt" : "2022-06-06T09:10:51.700Z",
+            "website" : null
+         }
+      ],
+      "permissions" : [
+         {
+            "activeModules" : {
+               "dashboard" : {
+                  "all" : true
+               },
+               "finance" : {
+                  "all" : true
+               },
+               "lists" : {
+                  "all" : true
+               },
+               "members" : {
+                  "all" : true,
+                  "contactList" : true,
+                  "lists" : true,
+                  "memberList" : true
+               },
+               "organization" : {
+                  "all" : true
+               },
+               "search" : {
+                  "all" : true
+               },
+               "settings" : {
+                  "all" : true
+               }
+            },
+            "clubId" : 42249,
+            "clubUserId" : 74724,
+            "createdAt" : "2022-05-13T09:10:09.291Z",
+            "role" : "owner",
+            "updatedAt" : "2022-05-13T09:10:09.291Z"
+         }
+      ],
+      "requestedMembers" : [
+         {
+            "clubId" : 42249,
+            "members" : []
+         }
+      ],
+      "selectedClubId" : 42249,
+      "updatedMembers" : [
+         {
+            "clubId" : 42249,
+            "members" : []
+         }
+      ],
+      "user" : {
+         "acceptUserAgreementAndPrivacyPolicy" : true,
+         "acceptUserAgreementAndPrivacyPolicyAt" : "2022-05-09T07:21:16.196Z",
+         "address" : {
+            "addressLine1" : "",
+            "addressLine2" : "",
+            "city" : "",
+            "countryId" : "2",
+            "zip" : ""
+         },
+         "allowRemoteMaintenance" : null,
+         "approved" : true,
+         "birthday" : "YYYY-MM-DDT00:00:00.000Z",
+         "buhlAccount" : {
+            "approved" : true,
+            "email" : "mail@xxxxxxxxxxxxxxxxxxx",
+            "globalId" : "60a85b10-0cef-48e1-b8cd-752e4779bc55"
+         },
+         "buhlGlobalId" : "60a85b10-0cef-48e1-b8cd-752e4779bc55",
+         "buhlTicket" : "TReXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXen",
+         "createdAt" : "2022-05-09T07:21:16.196Z",
+         "email" : "mail@xxxxxxxxxxxxxxxxxxx",
+         "emailNotifications" : true,
+         "fax" : null,
+         "firstName" : "Joachim",
+         "formOfAddress" : null,
+         "gender" : null,
+         "id" : 72868,
+         "isAdClient" : false,
+         "isClubAccount" : null,
+         "lastActivity" : "2022-08-19T12:27:43.124Z",
+         "lastLogin" : "2022-05-09T07:21:16.196Z",
+         "lastName" : "Breitner",
+         "maritalStatus" : null,
+         "mobilePhone" : "+4917630229212",
+         "password" : null,
+         "phone" : null,
+         "pictureExists" : false,
+         "placeholderColor" : "#26A69A",
+         "smsNotifications" : false,
+         "title" : null,
+         "updatedAt" : "2022-08-19T12:27:43.124Z",
+         "visitedViews" : [],
+         "website" : null
+      }
+   },
+   "rooms" : [
+      "Vm6FZWKeazhfeIuJW3wOnC/LUrBhtsSm7evkjSLWLlU="
+   ],
+   "user" : {
+      "_links" : [
+         {
+            "href" : "/protected/mv365/accounts/72868/images",
+            "method" : "POST",
+            "rel" : "update_image"
+         },
+         {
+            "href" : "/protected/mv365/accounts/visitedviews",
+            "method" : "POST",
+            "rel" : "visited_views"
+         },
+         {
+            "href" : "/protected/mv365/accounts/72868/images",
+            "method" : "DELETE",
+            "rel" : "delete_image"
+         },
+         {
+            "href" : "/mv365/accounts/72868/image?type=header",
+            "method" : "GET",
+            "rel" : "image_header"
+         },
+         {
+            "href" : "/mv365/accounts/72868/image?type=thumb",
+            "method" : "GET",
+            "rel" : "image_thumb"
+         },
+         {
+            "href" : "/mv365/accounts/72868/image?type=small",
+            "method" : "GET",
+            "rel" : "image_small"
+         },
+         {
+            "href" : "/mv365/accounts/72868/image?type=medium",
+            "method" : "GET",
+            "rel" : "image_medium"
+         },
+         {
+            "href" : "/mv365/accounts/72868/image?type=large",
+            "method" : "GET",
+            "rel" : "image_large"
+         },
+         {
+            "href" : "/mv365/accounts/72868/image?type=large",
+            "method" : "GET",
+            "rel" : "image_xlarge"
+         }
+      ],
+      "acceptUserAgreementAndPrivacyPolicy" : true,
+      "acceptUserAgreementAndPrivacyPolicyAt" : "2022-05-09T07:21:16.196Z",
+      "address" : {
+         "addressLine1" : "",
+         "addressLine2" : "",
+         "city" : "",
+         "countryId" : "2",
+         "zip" : ""
+      },
+      "allowRemoteMaintenance" : null,
+      "approved" : true,
+      "bankAccountData" : null,
+      "birthday" : "YYYY-MM-DDT00:00:00.000Z",
+      "buhlAccount" : {
+         "approved" : true,
+         "email" : "mail@xxxxxxxxxxxxxxxxxxx",
+         "globalId" : "60a85b10-0cef-48e1-b8cd-752e4779bc55"
+      },
+      "buhlGlobalId" : "60a85b10-0cef-48e1-b8cd-752e4779bc55",
+      "buhlTicket" : "TReXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXWXen",
+      "createdAt" : "2022-05-09T07:21:16.196Z",
+      "email" : "mail@xxxxxxxxxxxxxxxxxxx",
+      "emailNotifications" : true,
+      "fax" : null,
+      "firstName" : "Joachim",
+      "formOfAddress" : null,
+      "gender" : null,
+      "id" : 72868,
+      "isAdClient" : false,
+      "isClubAccount" : null,
+      "lastActivity" : "2022-08-19T12:27:43.124Z",
+      "lastLogin" : "2022-05-09T07:21:16.196Z",
+      "lastName" : "Breitner",
+      "maritalStatus" : null,
+      "mobilePhone" : "+4917630229212",
+      "password" : null,
+      "phone" : null,
+      "pictureExists" : false,
+      "placeholderColor" : "#26A69A",
+      "smsNotifications" : false,
+      "title" : null,
+      "updatedAt" : "2022-08-19T12:27:43.124Z",
+      "visitedViews" : [],
+      "website" : null
+   }
+}

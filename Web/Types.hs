@@ -54,8 +54,10 @@ instance SetField "meta" LoginData MetaBag where
 
 
 data SessionData = SessionData {
-    fullName :: Text,
-    nickname :: Text,
+    user :: User,
     actingFor :: Maybe Text
     }
 
+
+userName :: User -> Text
+userName u = fromMaybe (fullname u) (nickname u)

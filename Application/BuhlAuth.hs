@@ -1,4 +1,5 @@
 {-# LANGUAGE ViewPatterns #-}
+{-# LANGUAGE NamedFieldPuns #-}
 module Application.BuhlAuth where
 
 import IHP.ViewPrelude
@@ -10,13 +11,21 @@ import Control.Monad.Trans.Except
 import Text.HTML.TagSoup
 import Text.URI
 import Data.ByteString.UTF8 as BSU
+import Data.Foldable
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 
 badmintonJunkiesId :: Integer
 badmintonJunkiesId = 42249
 
-buhlLogin :: Text -> Text -> IO (Either Text Text)
+data BuhlAccountData = BuhlAccountData
+    { buhlId :: Text
+    , firstName :: Text
+    , lastName :: Text
+    , clubs :: [Integer]
+    }
+
+buhlLogin :: Text -> Text -> IO (Either Text BuhlAccountData)
 buhlLogin username password = runExceptT $ do
     r <- liftIO $ post "https://www.buhl.de/mein-buhlkonto/wp-admin/admin-ajax.php"
         [ "action" `partText` "LoginUser"
@@ -61,18 +70,22 @@ buhlLogin username password = runExceptT $ do
 
     r <- liftIO $ getWith (defaults & auth ?~ oauth2Bearer (T.encodeUtf8 token))
         "https://api.meinverein.de/protected/accounts?isAdminToolSession=false"
-    first_name <- orErr "accounts endpoint did not reveal first name" $
+
+    buhlId <- orErr "accounts endpoint did not reveal buhlGlobalId" $
+        r ^? responseBody . key "user" . key "buhlGlobalId" . _String
+    firstName <- orErr "accounts endpoint did not reveal first name" $
         r ^? responseBody . key "user" . key "firstName" . _String
-    last_name <- orErr "accounts endpoint did not reveal last name" $
+    lastName <- orErr "accounts endpoint did not reveal last name" $
         r ^? responseBody . key "user" . key "lastName" . _String
 
-    clubs <- orErr "accounts endpoint did not lists clubs" $
+    clubData <- orErr "accounts endpoint did not lists clubs" $
         r ^? responseBody . key "data" . key "clubs" . _Array
 
-    unless (Just badmintonJunkiesId `elem` fmap (\c -> c ^? key "id" . _Integer) clubs) $
-        throwE "It looks like you are not a member yet."
+    clubs <- forM (toList clubData) $ \c ->
+            orErr "club entry without id" $
+              c ^? key "id" . _Integer
 
-    return $ first_name <> " " <> last_name
+    return $ BuhlAccountData { buhlId, firstName, lastName, clubs }
 
 orErr msg Nothing = throwE msg
 orErr msg (Just x) = pure x

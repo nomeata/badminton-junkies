@@ -23,15 +23,42 @@ instance Controller SessionsController where
                     Left msg -> do
                         setErrorMessage $"Login failed: " <> msg
                         render EditView { .. }
-                    Right name -> do
-                        setSuccessMessage $ "Welcome, " <> name
-                        setSession "name" name
+                    Right (BuhlAccountData {buhlId, firstName, lastName, clubs}) -> do
+                        unless (badmintonJunkiesId `elem` clubs) $ do
+                            setErrorMessage "It looks like you are not a member yet."
+                            render EditView { .. }
+
+                        let fullName = firstName <> " " <> lastName
+
+                        user <- withTransaction $ do
+                            mbuser <- query @User |> filterWhere (#buhlId, buhlId) |> fetchOneOrNothing
+                            case mbuser of
+                                Just user' -> do
+                                    now <- getCurrentTime
+                                    -- seen this user before, just update with potentially new data
+                                    user' |> set #fullname fullName
+                                          |> set #lastLogin now
+                                          |> updateRecord
+                                Nothing -> do
+                                    -- new user
+                                    newRecord @User
+                                        |> set #fullname fullName
+                                        |> set #buhlId buhlId
+                                        |> createRecord
+
+                        setSuccessMessage $ "Welcome, " <> fullName
+                        setSession "userid" (user |> get #id)
                         redirectTo RegistrationsAction
 
     action ChangeNameAction = do
-        let new_name = param @Text "nickname"
-        setSuccessMessage $ "You are now known as " <> new_name
-        setSession "nickname" new_name
+        sd <- needAuth
+        if hasParam "clear" then do
+            user sd |> set #nickname Nothing |> updateRecord
+            setSuccessMessage $ "You are now known as " <> fullname (user sd)
+        else do
+            let new_name = param @Text "nickname"
+            user sd |> set #nickname (Just new_name) |> updateRecord
+            setSuccessMessage $ "You are now known as " <> new_name
         redirectTo RegistrationsAction
 
     action ChangeActingAction = do
@@ -45,5 +72,12 @@ instance Controller SessionsController where
         redirectTo RegistrationsAction
 
     action DeleteSessionAction = do
-        deleteSession "name"
+        deleteSession "userid"
         redirectTo RegistrationsAction
+
+needAuth :: (?context::ControllerContext) => IO SessionData
+needAuth = fromContext @(Maybe SessionData) >>= \case
+    Just sd -> pure sd
+    Nothing -> err "Please log in first"
+
+err msg = setErrorMessage msg >> redirectTo EditSessionAction >> pure undefined

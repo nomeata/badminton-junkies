@@ -35,10 +35,8 @@ needAuth = fromContext @(Maybe SessionData) >>= \case
     Nothing -> err "Please log in first"
 
 logMessage txt = do
-    sd <- fromContext >>= \case
-        Nothing -> error "This should not happen"
-        Just sd -> pure sd
-    newRecord @Log |> set #text (nickname sd <> " " <> txt) |> createRecord
+    sd <- fromMaybe (error "This should not happen") <$> fromContext
+    newRecord @Log |> set #text (userName (user sd) <> " " <> txt) |> createRecord
 
 err msg = setErrorMessage msg >> redirectTo KeyHoldersAction >> pure undefined
 ok msg = setSuccessMessage msg >> redirectTo KeyHoldersAction >> pure undefined

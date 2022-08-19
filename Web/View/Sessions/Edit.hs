@@ -15,11 +15,11 @@ editView sd = [hsx|
         <div class="d-flex align-items-center">
             <div class="w-100">
                 <div style="max-width: 400px" class="mx-auto mb-5">
-                    <h3>Hello, {fullName sd}</h3>
+                    <h3>Hello, {fullname (user sd)}</h3>
 
                     <p>You can change your nickname on this platform here:</p>
 
-                    {changeNickname (nickname sd)}
+                    {changeNickname (nickname (user sd))}
 
                     <hr/>
 
@@ -43,11 +43,18 @@ changeNickname nickname = [hsx|
         <div class="input-group-append">
          <button type="submit" class="btn btn-primary">Change</button>
         </div>
+        {clear}
      </div>
     </form>
 
     <p>By using different names, you can register twice. Please do not abuse this.</p>
  |]
+   where clear | isJust nickname = [hsx|
+            <div class="input-group-append">
+             <button type="submit" name="clear" class="btn btn-secondary">Clear</button>
+            </div>
+            |]
+               | otherwise = [hsx| |]
 
 changeActing (Just af) = [hsx|
     <p>You are currently acting for {af}.</p>
