@@ -16,5 +16,5 @@ logMessage txt = do
     sd <- fromMaybe (error "This should not happen") <$> fromContext
     newRecord @Log
         |> set #text txt
-        |> set #userId (Just (user sd |> get #id))
+        |> set #userId (user sd |> get #id)
         |> createRecord

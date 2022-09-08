@@ -14,6 +14,7 @@ instance Controller LogsController where
             |> paginate
 
         entries <- entryQ |> fetch
+            >>= collectionFetchRelated #userId
 
         render (IndexView { .. })
 

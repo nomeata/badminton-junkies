@@ -12,7 +12,7 @@ CREATE TABLE logs (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
     text TEXT NOT NULL,
-    user_id UUID DEFAULT NULL
+    user_id UUID NOT NULL
 );
 CREATE INDEX logs_created_at_index ON logs (created_at);
 CREATE TABLE keyholders (
