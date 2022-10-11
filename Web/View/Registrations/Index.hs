@@ -130,7 +130,7 @@ signUpForm Nothing upcoming_dates = [hsx|
 
 signUpForm (Just (reg, pd, open)) _ = [hsx|
    <p>You are registered for {get #date reg|>renderDate}.</p>
-   <p>You can sign up again at {pd_reg_block_over pd |> renderDate}.</p>
+   <p>You can sign up again on {pd_reg_block_over pd |> renderDate}.</p>
    {delete}
    |]
   where
