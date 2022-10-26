@@ -25,7 +25,8 @@ CREATE TABLE users (
     buhl_id TEXT NOT NULL UNIQUE,
     fullname TEXT NOT NULL,
     nickname TEXT DEFAULT NULL,
-    last_login TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
+    last_login TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+    email TEXT DEFAULT NULL
 );
 CREATE INDEX logs_user_id_index ON logs (user_id);
 ALTER TABLE logs ADD CONSTRAINT logs_ref_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE NO ACTION;

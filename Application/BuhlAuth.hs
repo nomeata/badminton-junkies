@@ -22,6 +22,7 @@ data BuhlAccountData = BuhlAccountData
     { buhlId :: Text
     , firstName :: Text
     , lastName :: Text
+    , email :: Text
     , clubs :: [Integer]
     }
 
@@ -71,12 +72,16 @@ buhlLogin username password = runExceptT $ do
     r <- liftIO $ getWith (defaults & auth ?~ oauth2Bearer (T.encodeUtf8 token))
         "https://api.meinverein.de/protected/accounts?isAdminToolSession=false"
 
-    buhlId <- orErr "accounts endpoint did not reveal buhlGlobalId" $
-        r ^? responseBody . key "user" . key "buhlGlobalId" . _String
+    -- traceShowM $ r ^? responseBody
+
+    buhlId <- orErr "accounts endpoint did not reveal user id" $ show <$>
+        r ^? responseBody . key "data" . key "user" . key "id" . _Integer
     firstName <- orErr "accounts endpoint did not reveal first name" $
-        r ^? responseBody . key "user" . key "firstName" . _String
+        r ^? responseBody . key "data" . key "user" . key "firstName" . _String
     lastName <- orErr "accounts endpoint did not reveal last name" $
-        r ^? responseBody . key "user" . key "lastName" . _String
+        r ^? responseBody . key "data" . key "user" . key "lastName" . _String
+    email <- orErr "accounts endpoint did not reveal email" $
+        r ^? responseBody . key "data" . key "user" . key "email" . _String
 
     clubData <- orErr "accounts endpoint did not lists clubs" $
         r ^? responseBody . key "data" . key "clubs" . _Array
@@ -85,7 +90,7 @@ buhlLogin username password = runExceptT $ do
             orErr "club entry without id" $
               c ^? key "id" . _Integer
 
-    return $ BuhlAccountData { buhlId, firstName, lastName, clubs }
+    return $ BuhlAccountData { buhlId, firstName, lastName, email, clubs }
 
 orErr msg Nothing = throwE msg
 orErr msg (Just x) = pure x

@@ -21,9 +21,9 @@ instance Controller SessionsController where
             Right login_data -> do
                 buhlLogin (get #email login_data) (get #password login_data) >>= \case
                     Left msg -> do
-                        setErrorMessage $"Login failed: " <> msg
+                        setErrorMessage $ "Login failed: " <> msg
                         render EditView { .. }
-                    Right (BuhlAccountData {buhlId, firstName, lastName, clubs}) -> do
+                    Right (BuhlAccountData {buhlId, firstName, lastName, email, clubs}) -> do
                         unless (badmintonJunkiesId `elem` clubs) $ do
                             setErrorMessage "It looks like you are not a member yet."
                             render EditView { .. }
@@ -37,14 +37,27 @@ instance Controller SessionsController where
                                     now <- getCurrentTime
                                     -- seen this user before, just update with potentially new data
                                     user' |> set #fullname fullName
+                                          |> set #email (Just email)
                                           |> set #lastLogin now
                                           |> updateRecord
                                 Nothing -> do
-                                    -- new user
-                                    newRecord @User
-                                        |> set #fullname fullName
-                                        |> set #buhlId buhlId
-                                        |> createRecord
+                                    -- Transition period: Try to match by name until the new buhlid is used everywhere
+                                    mbuser <- query @User |> filterWhere (#fullname, fullName) |> fetchOneOrNothing
+                                    case mbuser of
+                                        Just user' -> do
+                                            now <- getCurrentTime
+                                            -- Store new buhlid
+                                            user' |> set #buhlId buhlId
+                                                  |> set #email (Just email)
+                                                  |> set #lastLogin now
+                                                  |> updateRecord
+                                        Nothing -> do
+                                            -- new user
+                                            newRecord @User
+                                                |> set #fullname fullName
+                                                |> set #buhlId buhlId
+                                                |> set #email (Just email)
+                                                |> createRecord
 
                         setSuccessMessage $ "Welcome, " <> fullName
                         setSession "userid" (user |> get #id)
