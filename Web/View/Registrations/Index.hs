@@ -212,7 +212,7 @@ renderReg open n reg = [hsx|
   where
     nose | isNothing (get #playerUser reg) = [hsx|
          <div class="input-group-append">
-           <span class="input-group-text form-control bg-white">
+           <span class="input-group-text form-control bg-white" title="Schnupperer">
             👃
           </span>
          </div>
