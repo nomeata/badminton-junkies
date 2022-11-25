@@ -47,7 +47,6 @@ instance View IndexView where
         <div class="card-body">
         <p>This website is work-in-progress. The following features are missing:</p>
         <ul>
-          <li>Highlighting Schnupperer with 👃. </li>
           <li>Auto-complete player names when acting for someone else</li>
           <li>Viewing past line-ups</li>
         </ul>
@@ -204,11 +203,20 @@ renderReg open n reg = [hsx|
      {get #playerName reg}
      <!-- <span class="small"> {get #createdAt reg |> timeAgo}</span> -->
      </span>
+     {nose}
      {renderRacket}
    </div>
    </div>
 |]
   where
+    nose | isNothing (get #playerUser reg) = [hsx|
+         <div class="input-group-append">
+           <span class="input-group-text form-control bg-white">
+            👃
+          </span>
+         </div>
+      |]
+         | otherwise = mempty
     renderRacket | get #hasKey reg = renderRacketOrKey "🔑" "False" "no key"
                  | otherwise       = renderRacketOrKey "🏸" "True" "a key"
 
