@@ -47,6 +47,7 @@ instance View IndexView where
         <div class="card-body">
         <p>This website is work-in-progress. The following features are missing:</p>
         <ul>
+          <li>Do not show 👃 when someone signs up another member.</li>
           <li>Auto-complete player names when acting for someone else</li>
           <li>Viewing past line-ups</li>
         </ul>
