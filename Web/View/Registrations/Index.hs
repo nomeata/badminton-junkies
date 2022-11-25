@@ -47,7 +47,8 @@ instance View IndexView where
         <div class="card-body">
         <p>This website is work-in-progress. The following features are missing:</p>
         <ul>
-          <li>Auto-complete player names</li>
+          <li>Highlighting Schnupperer with 👃. </li>
+          <li>Auto-complete player names when acting for someone else</li>
           <li>Viewing past line-ups</li>
         </ul>
         </div>
