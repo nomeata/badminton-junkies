@@ -43,20 +43,14 @@ instance Controller RegistrationsController where
                 |> fetchExists
             date' <- prettyTime date
             logMessage [trimming|registered ${name} for ${date'}|]
-            newRecord @Registration
+            reg <- newRecord @Registration
                 |> set #playerName name
                 |> set #playerUser (if isJust (actingFor sd) then Nothing else Just (user sd |> get #id))
                 |> set #date date
                 |> set #hasKey hasKey
                 |> createRecord
 
-            -- now calculate position
-            regs <- query @Registration
-               |> filterWhere (#date, date)
-               |> orderBy #createdAt
-               |> fetch
-            let Just pos = succ <$> findIndex (\r -> get #playerName r == name) regs
-            return pos
+            getPos reg
 
         if isWaitlist pos
           then err $ "You have put " <> name <> " on the waitlist."
@@ -66,8 +60,9 @@ instance Controller RegistrationsController where
         needAuth
 
         reg <- fetch registrationId
-
-        isPlayingDateOpen (get #date reg)
+        pos <- getPos reg
+        unless (isWaitlist pos) $ do
+            isPlayingDateOpen (get #date reg)
 
         withTransaction $ do
             let name = get #playerName reg
@@ -138,6 +133,17 @@ currentSD = fromContext @(Maybe SessionData)
 actingName :: SessionData -> Text
 actingName sd = fromMaybe (userName (user sd)) (actingFor sd)
 
+-- Assumes that the name is signed up
+getPos :: (?modelContext::ModelContext) => Registration -> IO Int
+getPos reg = do
+    regs <- query @Registration
+       |> filterWhere (#date, get #date reg)
+       |> orderBy #createdAt
+       |> fetch
+    let Just pos = succ <$> findIndex (\r -> r == reg) regs
+    return pos
+
+
 findSignUp :: (?modelContext::ModelContext, ?context::ControllerContext) =>
     IO (Maybe (Registration, PlayDate, Bool))
 findSignUp = do
@@ -154,7 +160,12 @@ findSignUp = do
                   |> filterWhere (#date, get #pd_date pd)
                   |> filterWhere (#playerName, name)
                   |> fetchOneOrNothing
-                forEach regs $ \reg -> throwE (reg, pd, now < pd_date pd)
+
+                forEach regs $ \reg -> do
+                    pos <- liftIO $ getPos reg
+                    let open = now < pd_date pd
+                    let can_unregister = open || isWaitlist pos
+                    throwE (reg, pd, can_unregister)
 
 
 isRegistered :: (?modelContext::ModelContext) => Text -> IO (Either UTCTime ())

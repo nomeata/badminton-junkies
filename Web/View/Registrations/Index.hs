@@ -128,13 +128,13 @@ signUpForm Nothing upcoming_dates = [hsx|
    </div>
    |]
 
-signUpForm (Just (reg, pd, open)) _ = [hsx|
+signUpForm (Just (reg, pd, can_unregister)) _ = [hsx|
    <p>You are registered for {get #date reg|>renderDate}.</p>
    <p>You can sign up again on {pd_reg_block_over pd |> renderDate}.</p>
    {delete}
    |]
   where
-    delete | open = [hsx|
+    delete | can_unregister = [hsx|
         <a href={DeleteRegistrationAction (get #id reg)}
            class="js-delete form-control btn btn-warning border"
            data-confirm="Do you want to unregister?">Unregister</a>
