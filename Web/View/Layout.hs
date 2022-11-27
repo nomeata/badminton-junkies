@@ -24,12 +24,15 @@ defaultLayout inner = H.docTypeHtml ! A.lang "en" $ [hsx|
 
     <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
       <h5 class="my-0 mr-md-auto font-weight-normal">Badminton Junkies</h5>
+      <div class="my-2 my-md-0 mr-md-3">
+        {greeting}
+      </div>
       <nav class="my-2 my-md-0 mr-md-3">
-        <a href={RegistrationsAction} class={classes ["p-2", "text-dark", ("active", isActivePath RegistrationsAction)]}>🏸</a>
-        <a href={TrialsAction} class={classes ["p-2", "text-dark", ("active", isActivePath RegistrationsAction)]}>👃</a>
-        <a href={KeyHoldersAction} class={classes ["p-2", "text-dark", ("active", isActivePath KeyHoldersAction)]}>🔑</a>
-        <a href={LogsAction Nothing} class={classes ["p-2", "text-dark", ("active", isActivePath (LogsAction Nothing))]}>📓</a>
-        {loginOrOut}
+        <a href={RegistrationsAction} class={classes ["p-2 mx-1 btn text-dark border ", ("border-primary", isActivePath RegistrationsAction)]}>🏸</a>
+        <a href={TrialsAction} class={classes ["p-2 mx-1 btn text-dark border ", ("border-primary", isActivePath TrialsAction)]}>👃</a>
+        <a href={KeyHoldersAction} class={classes ["p-2 mx-1 btn text-dark border ", ("border-primary", isActivePath KeyHoldersAction)]}>🔑</a>
+        <a href={LogsAction Nothing} class={classes ["p-2 mx-1 btn text-dark border ", ("border-primary", isActivePath (LogsAction Nothing))]}>📓</a>
+        <a href={EditSessionAction} class={classes ["p-2 mx-1 btn text-dark border ", ("border-primary", isActivePath EditSessionAction)]}>🛠</a>
       </nav>
     </div>
 
@@ -40,8 +43,8 @@ defaultLayout inner = H.docTypeHtml ! A.lang "en" $ [hsx|
 </body>
 |]
 
-loginOrOut :: Html
-loginOrOut =
+greeting :: Html
+greeting =
     case fromFrozenContext :: Maybe SessionData of
         Nothing ->
             [hsx|
@@ -51,12 +54,10 @@ loginOrOut =
             Just u' ->
                 [hsx|
                       <span class="p-2">Hello, <s>{userName (user sd)}</s> {userName u'}!</span>
-                      <a class="p-2 btn btn-outline-primary" href={EditSessionAction}>🛠</a>
                 |]
             Nothing ->
                 [hsx|
                       <span class="p-2">Hello, {userName (user sd)}!</span>
-                      <a class="p-2 btn btn-outline-primary" href={EditSessionAction}>🛠</a>
                 |]
 
 -- The 'assetPath' function used below appends a `?v=SOME_VERSION` to the static assets in production
