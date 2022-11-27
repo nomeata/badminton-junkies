@@ -48,7 +48,6 @@ changeNickname nickname = [hsx|
      </div>
     </form>
 
-    <p>By using different names, you can register twice. Please do not abuse this.</p>
  |]
    where clear | isJust nickname = [hsx|
             <div class="input-group-append">
@@ -65,7 +64,7 @@ changeActing (Just af) other_users = [hsx|
  |]
 
 changeActing Nothing other_users = [hsx|
-    <p>You can also act in someone else's name, for example to register guests. Please do not abuse this either.</p>
+    <p>You can also act in some other member's name. Please do not abuse this. To sign up guests, use the 👃 page.</p>
 
     <form class="form-group" method="POST" action={ChangeActingAction}>
       <div class="input-group">
