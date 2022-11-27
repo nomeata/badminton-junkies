@@ -36,8 +36,13 @@ initUser = do
                 |> fetchOneOrNothing
             case mbuser of
                 Just user -> do
-                    maf <- getSession @Text "acting_for"
-                    pure $ Just $ SessionData user maf
+                    mafi <- getSession @(Id User) "acting_for_id"
+                    case mafi of
+                        Just other_user_id -> do
+                            other_user <- fetchOneOrNothing other_user_id
+                            pure $ Just $ SessionData user other_user
+                        Nothing ->
+                            pure $ Just $ SessionData user Nothing
                 Nothing -> pure Nothing
         Nothing -> pure Nothing
     putContext sd

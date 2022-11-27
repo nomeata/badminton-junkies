@@ -25,9 +25,10 @@ defaultLayout inner = H.docTypeHtml ! A.lang "en" $ [hsx|
     <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
       <h5 class="my-0 mr-md-auto font-weight-normal">Badminton Junkies</h5>
       <nav class="my-2 my-md-0 mr-md-3">
-        <a href={RegistrationsAction} class={classes ["p-2", "text-dark", ("active", isActivePath RegistrationsAction)]}>Play</a>
-        <a href={KeyHoldersAction} class={classes ["p-2", "text-dark", ("active", isActivePath KeyHoldersAction)]}>Keys</a>
-        <a href={LogsAction Nothing} class={classes ["p-2", "text-dark", ("active", isActivePath (LogsAction Nothing))]}>History</a>
+        <a href={RegistrationsAction} class={classes ["p-2", "text-dark", ("active", isActivePath RegistrationsAction)]}>🏸</a>
+        <a href={TrialsAction} class={classes ["p-2", "text-dark", ("active", isActivePath RegistrationsAction)]}>👃</a>
+        <a href={KeyHoldersAction} class={classes ["p-2", "text-dark", ("active", isActivePath KeyHoldersAction)]}>🔑</a>
+        <a href={LogsAction Nothing} class={classes ["p-2", "text-dark", ("active", isActivePath (LogsAction Nothing))]}>📓</a>
         {loginOrOut}
       </nav>
     </div>
@@ -47,9 +48,9 @@ loginOrOut =
                   <a class="p-2 btn btn-outline-primary" href={EditSessionAction}>Log in</a>
             |]
         Just sd -> case actingFor sd of
-            Just n' ->
+            Just u' ->
                 [hsx|
-                      <span class="p-2">Hello, <s>{userName (user sd)}</s> {n'}!</span>
+                      <span class="p-2">Hello, <s>{userName (user sd)}</s> {userName u'}!</span>
                       <a class="p-2 btn btn-outline-primary" href={EditSessionAction}>🛠</a>
                 |]
             Nothing ->

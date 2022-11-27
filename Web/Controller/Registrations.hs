@@ -2,6 +2,7 @@ module Web.Controller.Registrations where
 
 import Web.Controller.Prelude
 import Web.View.Registrations.Index
+import Web.View.Registrations.Trials
 
 import Data.Time.Zones
 import Control.Monad.Trans.Except
@@ -23,54 +24,94 @@ instance Controller RegistrationsController where
          )
         render IndexView { .. }
 
+    action TrialsAction = autoRefresh do
+        now <- getCurrentTime
+
+        upcoming_dates <- upcomingDates >>= mapM (\pd -> do
+            let d = get #pd_date pd
+            regs <- query @Registration
+               |> filterWhere (#date, d)
+               |> orderBy #createdAt
+               |> fetch
+               >>= collectionFetchRelatedOrNothing #playerUser
+            pure (pd, now < pd_date pd, regs)
+         )
+        render TrialView { .. }
+
     action RegisterAction = do
         needAuth
 
         let date = param @UTCTime "date"
         sd <- fromMaybe (error "should not happen") <$> currentSD
-        let name = actingName sd
 
         isPlayingDateOpen date
-        isRegistered name >>= \case
-            Left d | date == d ->
-                err $ name <> " is already registered on this day"
-                   | otherwise ->
-                err $ name <> " is already registered on another day"
-            Right () -> pure ()
 
-        pos <- withTransaction $ do
-            hasKey <- query @Keyholder
-                |> filterWhere (#holder, name)
-                |> fetchExists
-            date' <- prettyTime date
-            logMessage [trimming|registered ${name} for ${date'}|]
-            reg <- newRecord @Registration
-                |> set #playerName name
-                |> set #playerUser (if isJust (actingFor sd) then Nothing else Just (user sd |> get #id))
-                |> set #date date
-                |> set #hasKey hasKey
-                |> createRecord
+        case paramOrNothing @Text "trialname" of
+          Just trialName -> do
+            isRegisteredTrial trialName >>= \case
+                Left d | date == d ->
+                    err $ trialName <> " is already registered on this day"
+                       | otherwise ->
+                    err $ trialName <> " is already registered on another day"
+                Right () -> pure ()
 
-            getPos reg
+            pos <- withTransaction $ do
+                date' <- prettyTime date
+                logMessage [trimming|registered ${trialName} for ${date'}|]
+                reg <- newRecord @Registration
+                    |> set #playerName (Just trialName)
+                    |> set #playerUser Nothing
+                    |> set #date date
+                    |> createRecord
 
-        if isWaitlist pos
-          then err $ "You have put " <> name <> " on the waitlist."
-          else ok $ "You have registered " <> name <> "."
+                getPos reg
+
+            if isWaitlist pos
+              then err $ "You have put " <> trialName <> " on the waitlist."
+              else ok $ "You have registered " <> trialName <> "."
+          Nothing -> do
+            let name = userName (actingUser sd)
+            isRegisteredUser (actingUser sd) >>= \case
+                Left d | date == d ->
+                    err $ name <> " is already registered on this day"
+                       | otherwise ->
+                    err $ name <> " is already registered on another day"
+                Right () -> pure ()
+
+            pos <- withTransaction $ do
+                hasKey <- query @Keyholder
+                    |> filterWhere (#holder, userName (actingUser sd))
+                    |> fetchExists
+                date' <- prettyTime date
+                logMessage [trimming|registered ${userName (actingUser sd)} for ${date'}|]
+                reg <- newRecord @Registration
+                    |> set #playerName Nothing
+                    |> set #playerUser (Just ((actingUser sd).id))
+                    |> set #date date
+                    |> set #hasKey hasKey
+                    |> createRecord
+
+                getPos reg
+
+            if isWaitlist pos
+              then err $ "You have put " <> name <> " on the waitlist."
+              else ok $ "You have registered " <> name <> "."
 
     action DeleteRegistrationAction { registrationId } = do
         needAuth
 
-        reg <- fetch registrationId
+        reg  :: Registration <- fetch registrationId
+        reg' :: Reg <- reg |> fetchRelatedOrNothing #playerUser
+
         pos <- getPos reg
         unless (isWaitlist pos) $ do
             isPlayingDateOpen (get #date reg)
 
         withTransaction $ do
-            let name = get #playerName reg
             date <- prettyTime $ get #date reg
-            logMessage [trimming|removed registration of ${name} for ${date}|]
+            logMessage [trimming|removed registration of ${regName reg'} for ${date}|]
             deleteRecord reg
-        ok $ "You have unregistered " <> get #playerName reg <> "."
+        ok $ "You have unregistered " <> regName reg' <> "."
 
     action SetKeyRegistrationAction { registrationId } = do
         needAuth
@@ -80,12 +121,11 @@ instance Controller RegistrationsController where
             reg <- fetch registrationId
             when (get #hasKey reg == hasKey) $
                 err $ "Nothing to do"
-            let name = get #playerName reg
             date <- prettyTime $ get #date reg
             logMessage $
                 if hasKey
-                then [trimming|notes that ${name} has a key on ${date}|]
-                else [trimming|notes that ${name} has no key on ${date}|]
+                then [trimming|notes that ${regName reg} has a key on ${date}|]
+                else [trimming|notes that ${regName reg} has no key on ${date}|]
             reg |> set #hasKey hasKey |> updateRecord
         ok "Noted!"
 
@@ -101,8 +141,8 @@ isPlayingDateOpen d = do
         unless (pd_reg_opens pd <= now) $
           err "This playing date is not yet open for registration"
 
-err msg = setErrorMessage msg >> redirectTo RegistrationsAction >> pure undefined
-ok msg = setSuccessMessage msg >> redirectTo RegistrationsAction >> pure undefined
+err msg = setErrorMessage msg -- >> redirectTo RegistrationsAction >> pure undefined
+ok msg = setSuccessMessage msg -- >> redirectTo RegistrationsAction >> pure undefined
 
 upcomingDates :: IO [PlayDate]
 upcomingDates = do
@@ -131,8 +171,11 @@ needAuth = fromContext @(Maybe SessionData) >>= \case
 currentSD :: (?context::ControllerContext) => IO (Maybe SessionData)
 currentSD = fromContext @(Maybe SessionData)
 
+actingUser :: SessionData -> User
+actingUser sd = fromMaybe (user sd) (actingFor sd)
+
 actingName :: SessionData -> Text
-actingName sd = fromMaybe (userName (user sd)) (actingFor sd)
+actingName sd = userName (actingUser sd)
 
 -- Assumes that the name is signed up
 getPos :: (?modelContext::ModelContext) => Registration -> IO Int
@@ -151,7 +194,6 @@ findSignUp = do
     currentSD >>= \case
         Nothing -> pure Nothing
         Just sd -> do
-            let name = actingName sd
             pds <- upcomingDates
             now <- getCurrentTime
             fmap (either Just (const Nothing)) $ runExceptT $ forM_ pds $ \pd ->
@@ -159,7 +201,7 @@ findSignUp = do
                 regs <- liftIO $
                   query @Registration
                   |> filterWhere (#date, get #pd_date pd)
-                  |> filterWhere (#playerName, name)
+                  |> filterWhere (#playerUser, Just ((actingUser sd).id))
                   |> fetchOneOrNothing
 
                 forEach regs $ \reg -> do
@@ -169,8 +211,8 @@ findSignUp = do
                     throwE (reg, pd, can_unregister)
 
 
-isRegistered :: (?modelContext::ModelContext) => Text -> IO (Either UTCTime ())
-isRegistered name = do
+isRegisteredTrial :: (?modelContext::ModelContext) => Text -> IO (Either UTCTime ())
+isRegisteredTrial name = do
     pds <- upcomingDates
     now <- getCurrentTime
     runExceptT $ forM_ pds $ \pd ->
@@ -178,7 +220,20 @@ isRegistered name = do
         regs <- liftIO $
           query @Registration
           |> filterWhere (#date, get #pd_date pd)
-          |> filterWhere (#playerName, name)
+          |> filterWhere (#playerName, Just name)
+          |> fetch
+        unless (null regs) $ throwE (get #pd_date pd)
+
+isRegisteredUser :: (?modelContext::ModelContext) => User -> IO (Either UTCTime ())
+isRegisteredUser user = do
+    pds <- upcomingDates
+    now <- getCurrentTime
+    runExceptT $ forM_ pds $ \pd ->
+      when (now < get #pd_reg_block_over pd) $ do
+        regs <- liftIO $
+          query @Registration
+          |> filterWhere (#date, get #pd_date pd)
+          |> filterWhere (#playerUser, Just user.id)
           |> fetch
         unless (null regs) $ throwE (get #pd_date pd)
 

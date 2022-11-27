@@ -7,10 +7,14 @@ import Web.View.Sessions.Edit
 
 instance Controller SessionsController where
     action EditSessionAction = do
+        other_users <- query @User |> fetch
+
         let login_data = newRecord @LoginData
         render EditView { .. }
 
     action CreateSessionAction = do
+        other_users <- query @User |> fetch
+
         let login_data = newRecord @LoginData
               |> fill @["email","password"]
               |> validateField #email isEmail
@@ -75,13 +79,15 @@ instance Controller SessionsController where
         redirectTo RegistrationsAction
 
     action ChangeActingAction = do
-        let new_acting_name = param @Text "acting_for"
-        setSuccessMessage $ "You are now acting for " <> new_acting_name
-        setSession "acting_for" new_acting_name
+        let other_user_id = param @(Id User) "acting_for"
+        other_user <- fetch other_user_id
+
+        setSuccessMessage $ "You are now acting for " <> userName other_user
+        setSession "acting_for_id" other_user_id
         redirectTo RegistrationsAction
 
     action StopActingAction = do
-        deleteSession "acting_for"
+        deleteSession "acting_for_id"
         redirectTo RegistrationsAction
 
     action DeleteSessionAction = do

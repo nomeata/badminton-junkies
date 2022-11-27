@@ -4,14 +4,6 @@ import IHP.View.TimeAgo
 import Data.Time.Clock.POSIX
 
 
-type Reg = Registration' (Maybe User)
-
-data PlayDate = PlayDate
-  { pd_date           :: UTCTime
-  , pd_reg_opens      :: UTCTime
-  , pd_reg_block_over :: UTCTime
-  }
-
 data IndexView = IndexView
   { signed_up_for :: Maybe (Registration, PlayDate, Bool)
   , upcoming_dates :: [(PlayDate, Bool, [Reg])]
@@ -79,7 +71,7 @@ instance View IndexView where
 actWarning :: Html
 actWarning = case fromFrozenContext :: Maybe SessionData of
     Just (SessionData {actingFor = Just n}) -> [hsx|
-      <p><strong class="text-danger">Warning:</strong> You are acting for {n}</p>
+      <p><strong class="text-danger">Warning:</strong> You are acting for {userName n}</p>
      |]
     _ -> [hsx||]
 
@@ -208,7 +200,7 @@ renderReg open n reg = [hsx|
    <div class="input-group">
      {renderPosition n}
      <span class={"input-group-text form-control " <> (if isWaitlist n then "" else "bg-white" :: String)}>
-     {name}
+     {regName reg}
      <!-- <span class="small"> {get #createdAt reg |> timeAgo}</span> -->
      </span>
      {nose}
@@ -217,17 +209,14 @@ renderReg open n reg = [hsx|
    </div>
 |]
   where
-    (name, nose)
-         | Just user <- get #playerUser reg = (userName user, mempty)
-         | otherwise = (get #playerName reg, noseElem)
-
-    noseElem = [hsx|
+    nose | regIsTrial reg = [hsx|
          <div class="input-group-append">
            <span class="input-group-text form-control bg-white" title="Schnupperer">
             👃
           </span>
          </div>
       |]
+         | otherwise = [hsx||]
 
     renderRacket | get #hasKey reg = renderRacketOrKey "🔑" "False" "no key"
                  | otherwise       = renderRacketOrKey "🏸" "True" "a key"

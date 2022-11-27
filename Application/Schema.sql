@@ -1,7 +1,7 @@
 -- Your database schema. Use the Schema Designer at http://localhost:8001/ to add some tables.
 CREATE TABLE registrations (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY NOT NULL,
-    player_name TEXT NOT NULL,
+    player_name TEXT,
     date TIMESTAMP WITH TIME ZONE NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
     has_key BOOLEAN DEFAULT false NOT NULL,

@@ -9,4 +9,5 @@ instance AutoRoute RegistrationsController
 instance AutoRoute LogsController
 instance AutoRoute SessionsController
 instance AutoRoute KeyHoldersController
+instance AutoRoute (Id' "users")
 

@@ -10,6 +10,7 @@ data StaticController = WelcomeAction deriving (Eq, Show, Data)
 
 data RegistrationsController
     = RegistrationsAction
+    | TrialsAction
     | RegisterAction
     | DeleteRegistrationAction { registrationId :: !(Id Registration) }
     | SetKeyRegistrationAction { registrationId :: !(Id Registration) }
@@ -55,9 +56,27 @@ instance SetField "meta" LoginData MetaBag where
 
 data SessionData = SessionData {
     user :: User,
-    actingFor :: Maybe Text
+    actingFor :: Maybe User
     }
 
 
 userName :: User -> Text
 userName u = fromMaybe (fullname u) (nickname u)
+
+type Reg = Registration' (Maybe User)
+
+regName :: Reg -> Text
+regName reg | Just user <- get #playerUser reg = userName user
+            | Just trialUser <- get #playerName reg = trialUser
+            | otherwise = "?"
+
+regIsTrial :: Reg -> Bool
+regIsTrial reg = isNothing reg.playerUser
+
+
+data PlayDate = PlayDate
+  { pd_date           :: UTCTime
+  , pd_reg_opens      :: UTCTime
+  , pd_reg_block_over :: UTCTime
+  }
+
