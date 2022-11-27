@@ -18,6 +18,7 @@ instance Controller RegistrationsController where
                |> filterWhere (#date, d)
                |> orderBy #createdAt
                |> fetch
+               >>= collectionFetchRelatedOrNothing #playerUser
             pure (pd, now < pd_date pd, regs)
          )
         render IndexView { .. }

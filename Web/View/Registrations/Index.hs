@@ -3,6 +3,9 @@ import Web.View.Prelude
 import IHP.View.TimeAgo
 import Data.Time.Clock.POSIX
 
+
+type Reg = Registration' (Maybe User)
+
 data PlayDate = PlayDate
   { pd_date           :: UTCTime
   , pd_reg_opens      :: UTCTime
@@ -11,10 +14,10 @@ data PlayDate = PlayDate
 
 data IndexView = IndexView
   { signed_up_for :: Maybe (Registration, PlayDate, Bool)
-  , upcoming_dates :: [(PlayDate, Bool, [Registration])]
+  , upcoming_dates :: [(PlayDate, Bool, [Reg])]
   }
 
-data Entry = R Registration | E
+data Entry = R (Reg) | E
 
 instance View IndexView where
     html IndexView { .. } = [hsx|
@@ -81,7 +84,9 @@ actWarning = case fromFrozenContext :: Maybe SessionData of
     _ -> [hsx||]
 
 
-signUpRow :: Maybe (Registration, PlayDate, Bool) -> [(PlayDate, Bool, [Registration])] -> Html
+signUpRow ::
+  Maybe (Registration, PlayDate, Bool) ->
+  [(PlayDate, Bool, [Reg])] -> Html
 signUpRow signed_up_for upcoming_dates
     | Nothing <- fromFrozenContext @(Maybe SessionData)
     = [hsx| |]
@@ -102,13 +107,15 @@ signUpRow signed_up_for upcoming_dates
       </div>
     |]
 
-signUpForm :: Maybe (Registration, PlayDate, Bool) -> [(PlayDate, Bool, [Registration])] -> Html
+signUpForm ::
+    Maybe (Registration, PlayDate, Bool) ->
+    [(PlayDate, Bool, [Reg])] -> Html
 
 signUpForm Nothing upcoming_dates = [hsx|
    {forEach upcoming_dates signUpButton}
   |]
   where
-  signUpButton :: (PlayDate, Bool, [Registration]) -> Html
+  signUpButton :: (PlayDate, Bool, [Reg]) -> Html
   signUpButton (pd, True, regs) = [hsx|
    <form method="POST" class="form-group mb-2" action={RegisterAction}>
    <div class="input-group">
@@ -142,7 +149,7 @@ signUpForm (Just (reg, pd, can_unregister)) _ = [hsx|
       |]
            | otherwise = [hsx| |]
 
-renderUpcomingDate :: (PlayDate, Bool, [Registration]) -> Html
+renderUpcomingDate :: (PlayDate, Bool, [Reg]) -> Html
 renderUpcomingDate (pd, open, regs) = [hsx|
    <div class="col-lg-4">
    <div class="card mb-4 box-shadow md-4">
@@ -195,13 +202,13 @@ renderPosition n | isWaitlist n = [hsx|
   |]
 
 
-renderReg :: Bool -> Int -> Registration -> Html
+renderReg :: Bool -> Int -> Reg -> Html
 renderReg open n reg = [hsx|
    <div class="form-group mb-2">
    <div class="input-group">
      {renderPosition n}
      <span class={"input-group-text form-control " <> (if isWaitlist n then "" else "bg-white" :: String)}>
-     {get #playerName reg}
+     {name}
      <!-- <span class="small"> {get #createdAt reg |> timeAgo}</span> -->
      </span>
      {nose}
@@ -210,14 +217,18 @@ renderReg open n reg = [hsx|
    </div>
 |]
   where
-    nose | isNothing (get #playerUser reg) = [hsx|
+    (name, nose)
+         | Just user <- get #playerUser reg = (userName user, mempty)
+         | otherwise = (get #playerName reg, noseElem)
+
+    noseElem = [hsx|
          <div class="input-group-append">
            <span class="input-group-text form-control bg-white" title="Schnupperer">
             👃
           </span>
          </div>
       |]
-         | otherwise = mempty
+
     renderRacket | get #hasKey reg = renderRacketOrKey "🔑" "False" "no key"
                  | otherwise       = renderRacketOrKey "🏸" "True" "a key"
 
