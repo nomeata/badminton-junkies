@@ -11,9 +11,9 @@ data StaticController = WelcomeAction deriving (Eq, Show, Data)
 data RegistrationsController
     = RegistrationsAction
     | TrialsAction
-    | RegisterAction
-    | DeleteRegistrationAction { registrationId :: !(Id Registration) }
-    | SetKeyRegistrationAction { registrationId :: !(Id Registration) }
+    | RegisterAction { fromTrial :: !Text }
+    | DeleteRegistrationAction { fromTrial :: !Text, registrationId :: !(Id Registration) }
+    | SetKeyRegistrationAction { fromTrial :: !Text, registrationId :: !(Id Registration) }
     deriving (Eq, Show, Data)
 
 newtype LogsController

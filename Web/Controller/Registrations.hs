@@ -38,21 +38,21 @@ instance Controller RegistrationsController where
          )
         render TrialView { .. }
 
-    action RegisterAction = do
-        needAuth
+    action RegisterAction { fromTrial } = do
+        needAuth fromTrial
 
         let date = param @UTCTime "date"
         sd <- fromMaybe (error "should not happen") <$> currentSD
 
-        isPlayingDateOpen date
+        isPlayingDateOpen fromTrial date
 
         case paramOrNothing @Text "trialname" of
           Just trialName -> do
             isRegisteredTrial trialName >>= \case
                 Left d | date == d ->
-                    err $ trialName <> " is already registered on this day"
+                    err fromTrial $ trialName <> " is already registered on this day"
                        | otherwise ->
-                    err $ trialName <> " is already registered on another day"
+                    err fromTrial $ trialName <> " is already registered on another day"
                 Right () -> pure ()
 
             pos <- withTransaction $ do
@@ -67,15 +67,15 @@ instance Controller RegistrationsController where
                 getPos reg
 
             if isWaitlist pos
-              then err $ "You have put " <> trialName <> " on the waitlist."
-              else ok $ "You have registered " <> trialName <> "."
+              then err fromTrial $ "You have put " <> trialName <> " on the waitlist."
+              else ok fromTrial $ "You have registered " <> trialName <> "."
           Nothing -> do
             let name = userName (actingUser sd)
             isRegisteredUser (actingUser sd) >>= \case
                 Left d | date == d ->
-                    err $ name <> " is already registered on this day"
+                    err fromTrial $ name <> " is already registered on this day"
                        | otherwise ->
-                    err $ name <> " is already registered on another day"
+                    err fromTrial $ name <> " is already registered on another day"
                 Right () -> pure ()
 
             pos <- withTransaction $ do
@@ -94,55 +94,61 @@ instance Controller RegistrationsController where
                 getPos reg
 
             if isWaitlist pos
-              then err $ "You have put " <> name <> " on the waitlist."
-              else ok $ "You have registered " <> name <> "."
+              then err fromTrial $ "You have put " <> name <> " on the waitlist."
+              else ok fromTrial $ "You have registered " <> name <> "."
 
-    action DeleteRegistrationAction { registrationId } = do
-        needAuth
+    action DeleteRegistrationAction { fromTrial, registrationId } = do
+        needAuth fromTrial
 
         reg  :: Registration <- fetch registrationId
         reg' :: Reg <- reg |> fetchRelatedOrNothing #playerUser
 
         pos <- getPos reg
         unless (isWaitlist pos) $ do
-            isPlayingDateOpen (get #date reg)
+            isPlayingDateOpen fromTrial (get #date reg)
 
         withTransaction $ do
             date <- prettyTime $ get #date reg
             logMessage [trimming|removed registration of ${regName reg'} for ${date}|]
             deleteRecord reg
-        ok $ "You have unregistered " <> regName reg' <> "."
+        ok fromTrial $ "You have unregistered " <> regName reg' <> "."
 
-    action SetKeyRegistrationAction { registrationId } = do
-        needAuth
+    action SetKeyRegistrationAction { fromTrial, registrationId } = do
+        needAuth fromTrial
 
         let hasKey = param @Bool "hasKey"
         withTransaction $ do
             reg <- fetch registrationId
             when (get #hasKey reg == hasKey) $
-                err $ "Nothing to do"
+                err fromTrial $ "Nothing to do"
             date <- prettyTime $ get #date reg
             logMessage $
                 if hasKey
                 then [trimming|notes that ${regName reg} has a key on ${date}|]
                 else [trimming|notes that ${regName reg} has no key on ${date}|]
             reg |> set #hasKey hasKey |> updateRecord
-        ok "Noted!"
+        ok fromTrial "Noted!"
 
 
-isPlayingDateOpen d = do
+isPlayingDateOpen fromTrial d = do
     now <- getCurrentTime
     pds <- upcomingDates
     case find (\pd -> d == pd_date pd) pds of
-      Nothing -> err "This playing date is not up for registration"
+      Nothing -> err fromTrial "This playing date is not up for registration"
       Just pd -> do
         unless (now < pd_date pd) $
-          err "This playing date has already started"
+          err fromTrial "This playing date has already started"
         unless (pd_reg_opens pd <= now) $
-          err "This playing date is not yet open for registration"
+          err fromTrial "This playing date is not yet open for registration"
 
-err msg = setErrorMessage msg -- >> redirectTo RegistrationsAction >> pure undefined
-ok msg = setSuccessMessage msg -- >> redirectTo RegistrationsAction >> pure undefined
+-- Query parameters cannot be Bool :-(
+ok, err :: (?context::ControllerContext) => Text -> Text -> IO a
+err "main" msg = setErrorMessage msg >> redirectTo RegistrationsAction >> pure undefined
+err "trials" msg = setErrorMessage msg >> redirectTo TrialsAction >> pure undefined
+err x _ = error $ "Unexpected value " <> show x
+ok "main" msg = setSuccessMessage msg >> redirectTo RegistrationsAction >> pure undefined
+ok "trials" msg = setSuccessMessage msg >> redirectTo TrialsAction >> pure undefined
+ok x _ = error $ "Unexpected value " <> show x
 
 upcomingDates :: IO [PlayDate]
 upcomingDates = do
@@ -163,10 +169,10 @@ upcomingDates = do
         _      ->  []
      ]
 
-needAuth :: (?context::ControllerContext) => IO ()
-needAuth = fromContext @(Maybe SessionData) >>= \case
+needAuth :: (?context::ControllerContext) => Text -> IO ()
+needAuth fromTrial = fromContext @(Maybe SessionData) >>= \case
     Just sd -> pure ()
-    Nothing -> err "Please log in first"
+    Nothing -> err fromTrial "Please log in first"
 
 currentSD :: (?context::ControllerContext) => IO (Maybe SessionData)
 currentSD = fromContext @(Maybe SessionData)

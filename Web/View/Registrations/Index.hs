@@ -63,10 +63,6 @@ instance View IndexView where
        </div>
       </div>
     |]
-        where
-            breadcrumb = renderBreadcrumb
-                [ breadcrumbLink "Registrations" RegistrationsAction
-                ]
 
 actWarning :: Html
 actWarning = case fromFrozenContext :: Maybe SessionData of
@@ -109,7 +105,7 @@ signUpForm Nothing upcoming_dates = [hsx|
   where
   signUpButton :: (PlayDate, Bool, [Reg]) -> Html
   signUpButton (pd, True, regs) = [hsx|
-   <form method="POST" class="form-group mb-2" action={RegisterAction}>
+   <form method="POST" class="form-group mb-2" action={RegisterAction "main"}>
    <div class="input-group">
       <input type="hidden" name="date" value={inputValue (pd_date pd)}/>
       <button class={cls}>{pd |> pd_date |> renderDate}</button>
@@ -135,7 +131,7 @@ signUpForm (Just (reg, pd, can_unregister)) _ = [hsx|
    |]
   where
     delete | can_unregister = [hsx|
-        <a href={DeleteRegistrationAction (get #id reg)}
+        <a href={DeleteRegistrationAction "main" (get #id reg)}
            class="js-delete form-control btn btn-warning border"
            data-confirm="Do you want to unregister?">Unregister</a>
       |]
@@ -223,7 +219,7 @@ renderReg open n reg = [hsx|
 
     renderRacketOrKey symbol otherVal confirm = [hsx|
          <div class="input-group-append">
-           <form method="POST" action={SetKeyRegistrationAction (get #id reg)}>
+           <form method="POST" action={SetKeyRegistrationAction "main" (get #id reg)}>
             <input type="hidden" name="hasKey" value={otherVal::Text}/>
             <button type="submit" class="btn btn-light border" title={"Does " <> get #playerName reg <> " have " <> confirm <> "?"}>
              {symbol :: Text}

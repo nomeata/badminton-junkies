@@ -42,7 +42,7 @@ signUpForm ::
     [(PlayDate, Bool, [Reg])] -> Html
 
 signUpForm upcoming_dates = [hsx|
-   <form method="POST" class="mb-2" action={RegisterAction}>
+   <form method="POST" class="mb-2" action={RegisterAction "trials"}>
      <div class="form-group">
      <div class="input-group">
         <input class="form-control" type="text" name="trialname" placeholder="Full name" value=""/>
@@ -141,7 +141,7 @@ renderReg open n reg = [hsx|
   where
     nose | regIsTrial reg = [hsx|
          <div class="input-group-append">
-            <a href={DeleteRegistrationAction (get #id reg)} class="js-delete btn btn-secondary bg-white" data-confirm={"Do you want to unregister " <> get #playerName reg <> "?"}>➖</a>
+            <a href={DeleteRegistrationAction "trials" (get #id reg)} class="js-delete btn btn-secondary bg-white" data-confirm={"Do you want to unregister " <> get #playerName reg <> "?"}>➖</a>
          </div>
       |]
          | otherwise = [hsx||]
