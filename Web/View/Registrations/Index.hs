@@ -28,7 +28,7 @@ instance View IndexView where
         <p>You can sign up for one play time at a time. If you have just played, wait until 20:30 before signing up for the next play time.</p>
         <p>You can unregister. People on the waitlist will then move up. Please also message the group to tell them that a spot is now open.</p>
         <p>To indicate that you have a key, click on  🏸 to turn it into a 🔑.</p>
-        <p>To change your nickname or register other people, click the 🛠 button in the top-right corner.</p>
+        <p>To change your nickname or register other members, click the 🛠 button in the top-right corner. To sign up trials (“Schnupperer”), use the 👃 page.</p>
         <p>The system keeps a log of registrations and removals.</p>
         </div>
         </div>
@@ -42,9 +42,9 @@ instance View IndexView where
         <div class="card-body">
         <p>This website is work-in-progress. The following features are missing:</p>
         <ul>
-          <li>Do not show 👃 when someone signs up another member.</li>
-          <li>Auto-complete player names when acting for someone else</li>
-          <li>Viewing past line-ups</li>
+          <li>Link the 🔑 to members, not just names.</li>
+          <li>Auto-complete player names when acting for someone else.</li>
+          <li>Viewing past line-ups.</li>
         </ul>
         </div>
         </div>
