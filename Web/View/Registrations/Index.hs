@@ -219,7 +219,7 @@ renderReg open n (reg, has_key) = [hsx|
 
     renderRacketOrKey symbol = [hsx|
          <div class="input-group-append">
-            <div class="input-group-text border">
+            <div class="input-group-text border bg-white">
              {symbol :: Text}
             </div>
          </div>
