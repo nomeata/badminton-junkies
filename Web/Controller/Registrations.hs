@@ -79,11 +79,12 @@ instance Controller RegistrationsController where
                 Right () -> pure ()
 
             pos <- withTransaction $ do
+                let name = userName (actingUser sd)
                 hasKey <- query @Keyholder
-                    |> filterWhere (#holder, userName (actingUser sd))
+                    |> filterWhere (#holder, name)
                     |> fetchExists
                 date' <- prettyTime date
-                logMessage [trimming|registered ${userName (actingUser sd)} for ${date'}|]
+                logMessage [trimming|registered ${name} for ${date'}|]
                 reg <- newRecord @Registration
                     |> set #playerName Nothing
                     |> set #playerUser (Just ((actingUser sd).id))
@@ -109,7 +110,8 @@ instance Controller RegistrationsController where
 
         withTransaction $ do
             date <- prettyTime $ get #date reg
-            logMessage [trimming|removed registration of ${regName reg'} for ${date}|]
+            let name = regName reg'
+            logMessage [trimming|removed registration of ${name} for ${date}|]
             deleteRecord reg
         ok fromTrial $ "You have unregistered " <> regName reg' <> "."
 
@@ -118,14 +120,16 @@ instance Controller RegistrationsController where
 
         let hasKey = param @Bool "hasKey"
         withTransaction $ do
-            reg <- fetch registrationId
+            reg :: Registration <- fetch registrationId
+            reg' :: Reg <- reg |> fetchRelatedOrNothing #playerUser
             when (get #hasKey reg == hasKey) $
                 err fromTrial $ "Nothing to do"
             date <- prettyTime $ get #date reg
+            let name = regName reg'
             logMessage $
                 if hasKey
-                then [trimming|notes that ${regName reg} has a key on ${date}|]
-                else [trimming|notes that ${regName reg} has no key on ${date}|]
+                then [trimming|notes that ${name} has a key on ${date}|]
+                else [trimming|notes that ${name} has no key on ${date}|]
             reg |> set #hasKey hasKey |> updateRecord
         ok fromTrial "Noted!"
 
