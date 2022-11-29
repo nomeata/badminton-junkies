@@ -5,6 +5,7 @@ import Web.View.KeyHolders.Index
 
 instance Controller KeyHoldersController where
     action KeyHoldersAction = do
+        users <- query @User |> fetch
         entries <- query @Keyholder
             |> orderByAsc #keyNumber
             |> fetch
@@ -15,19 +16,23 @@ instance Controller KeyHoldersController where
         needAuth
 
         let key_number = param @Int "keyNumber"
-        let new_holder = param @Text "newHolder"
+        new_holder <- fetch $ param @(Id User) "newHolder"
 
         entry <- query @Keyholder
             |> orderByAsc #keyNumber
             |> filterWhere (#keyNumber, key_number)
             |> fetchOne
+        entry' <- entry |> fetchRelatedOrNothing #userId
 
-        let entry' = entry |> set #holder new_holder
-        entry' |> updateRecord
+        entry |> set #userId (Just new_holder.id)
+              |> updateRecord
 
-        setSuccessMessage $ "Key " <> show key_number <> " is now held by " <> new_holder
-        logMessage $ "indicated that key number " <> show key_number <> " was passed from " <> (entry |> get #holder) <> " to " <> new_holder
+        setSuccessMessage $ "Key " <> show key_number <> " is now held by " <> userName new_holder
+        logMessage $ "indicated that key number " <> show key_number <> " was passed from " <> (userName' entry'.userId) <> " to " <> userName new_holder
         redirectTo KeyHoldersAction
+      where
+        userName' Nothing = "?"
+        userName' (Just u) = userName u
 
 needAuth :: (?context::ControllerContext) => IO ()
 needAuth = fromContext @(Maybe SessionData) >>= \case

@@ -13,6 +13,10 @@ instance Controller RegistrationsController where
 
         signed_up_for <- findSignUp
 
+        keyholders <- mapMaybe (.userId) <$> query @Keyholder |> fetch
+        let has_key Nothing = False
+            has_key (Just user) = user.id `elem` keyholders
+
         upcoming_dates <- upcomingDates >>= mapM (\pd -> do
             let d = get #pd_date pd
             regs <- query @Registration
@@ -20,8 +24,12 @@ instance Controller RegistrationsController where
                |> orderBy #createdAt
                |> fetch
                >>= collectionFetchRelatedOrNothing #playerUser
+               >>= pure .  map (\r -> (r, has_key (r.playerUser)))
+
             pure (pd, now < pd_date pd, regs)
          )
+
+
         render IndexView { .. }
 
     action TrialsAction = autoRefresh do

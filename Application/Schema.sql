@@ -18,7 +18,8 @@ CREATE INDEX logs_created_at_index ON logs (created_at);
 CREATE TABLE keyholders (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY NOT NULL,
     key_number INT NOT NULL UNIQUE,
-    holder TEXT NOT NULL
+    holder TEXT NOT NULL,
+    user_id UUID
 );
 CREATE TABLE users (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY NOT NULL,
@@ -29,5 +30,7 @@ CREATE TABLE users (
     email TEXT DEFAULT NULL
 );
 CREATE INDEX logs_user_id_index ON logs (user_id);
+CREATE INDEX keyholders_user_id_index ON keyholders (user_id);
+ALTER TABLE keyholders ADD CONSTRAINT keyholders_ref_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE NO ACTION;
 ALTER TABLE logs ADD CONSTRAINT logs_ref_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE NO ACTION;
 ALTER TABLE registrations ADD CONSTRAINT registrations_ref_player_user FOREIGN KEY (player_user) REFERENCES users (id) ON DELETE NO ACTION;
