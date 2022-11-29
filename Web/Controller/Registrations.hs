@@ -88,16 +88,12 @@ instance Controller RegistrationsController where
 
             pos <- withTransaction $ do
                 let name = userName (actingUser sd)
-                hasKey <- query @Keyholder
-                    |> filterWhere (#userId, (actingUser sd).id)
-                    |> fetchExists
                 date' <- prettyTime date
                 logMessage [trimming|registered ${name} for ${date'}|]
                 reg <- newRecord @Registration
                     |> set #playerName Nothing
                     |> set #playerUser (Just ((actingUser sd).id))
                     |> set #date date
-                    |> set #hasKey hasKey
                     |> createRecord
 
                 getPos reg
@@ -122,24 +118,6 @@ instance Controller RegistrationsController where
             logMessage [trimming|removed registration of ${name} for ${date}|]
             deleteRecord reg
         ok fromTrial $ "You have unregistered " <> regName reg' <> "."
-
-    action SetKeyRegistrationAction { fromTrial, registrationId } = do
-        needAuth fromTrial
-
-        let hasKey = param @Bool "hasKey"
-        withTransaction $ do
-            reg :: Registration <- fetch registrationId
-            reg' :: Reg <- reg |> fetchRelatedOrNothing #playerUser
-            when (get #hasKey reg == hasKey) $
-                err fromTrial $ "Nothing to do"
-            date <- prettyTime $ get #date reg
-            let name = regName reg'
-            logMessage $
-                if hasKey
-                then [trimming|notes that ${name} has a key on ${date}|]
-                else [trimming|notes that ${name} has no key on ${date}|]
-            reg |> set #hasKey hasKey |> updateRecord
-        ok fromTrial "Noted!"
 
 
 isPlayingDateOpen fromTrial d = do

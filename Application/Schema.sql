@@ -4,7 +4,6 @@ CREATE TABLE registrations (
     player_name TEXT,
     date TIMESTAMP WITH TIME ZONE NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
-    has_key BOOLEAN DEFAULT false NOT NULL,
     player_user UUID DEFAULT NULL
 );
 CREATE INDEX registrations_created_at_index ON registrations (created_at);

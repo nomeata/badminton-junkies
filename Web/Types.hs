@@ -13,7 +13,6 @@ data RegistrationsController
     | TrialsAction
     | RegisterAction { fromTrial :: !Text }
     | DeleteRegistrationAction { fromTrial :: !Text, registrationId :: !(Id Registration) }
-    | SetKeyRegistrationAction { fromTrial :: !Text, registrationId :: !(Id Registration) }
     deriving (Eq, Show, Data)
 
 newtype LogsController
