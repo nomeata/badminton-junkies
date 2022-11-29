@@ -49,5 +49,5 @@ renderEntry users k = [hsx|
 |]
    where
    userOption user = [hsx|
-     <option value={user.id |> tshow} selected={Just user.id  == k.userId}>{userName user}</option>
+     <option value={user.id |> tshow} selected={user.id  == k.userId}>{userName user}</option>
    |]

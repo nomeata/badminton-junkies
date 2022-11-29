@@ -13,7 +13,7 @@ instance Controller RegistrationsController where
 
         signed_up_for <- findSignUp
 
-        keyholders <- mapMaybe (.userId) <$> query @Keyholder |> fetch
+        keyholders <- map (.userId) <$> query @Keyholder |> fetch
         let has_key Nothing = False
             has_key (Just user) = user.id `elem` keyholders
 
@@ -89,7 +89,7 @@ instance Controller RegistrationsController where
             pos <- withTransaction $ do
                 let name = userName (actingUser sd)
                 hasKey <- query @Keyholder
-                    |> filterWhere (#holder, name)
+                    |> filterWhere (#userId, (actingUser sd).id)
                     |> fetchExists
                 date' <- prettyTime date
                 logMessage [trimming|registered ${name} for ${date'}|]

@@ -18,8 +18,7 @@ CREATE INDEX logs_created_at_index ON logs (created_at);
 CREATE TABLE keyholders (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY NOT NULL,
     key_number INT NOT NULL UNIQUE,
-    holder TEXT NOT NULL,
-    user_id UUID
+    user_id UUID NOT NULL
 );
 CREATE TABLE users (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY NOT NULL,
