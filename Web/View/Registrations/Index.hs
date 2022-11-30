@@ -3,8 +3,6 @@ import Web.View.Prelude
 import IHP.View.TimeAgo
 import Data.Time.Clock.POSIX
 
-
-
 type RegWithKey = (Reg, Bool)
 
 data IndexView = IndexView
@@ -200,30 +198,24 @@ renderReg open n (reg, has_key) = [hsx|
      <!-- <span class="small"> {get #createdAt reg |> timeAgo}</span> -->
      </span>
      {nose}
-     {renderRacket}
+     {key}
    </div>
    </div>
 |]
   where
-    nose | regIsTrial reg = [hsx|
-         <div class="input-group-append">
-           <span class="input-group-text form-control bg-white" title="Schnupperer">
-            👃
-          </span>
-         </div>
-      |]
-         | otherwise = [hsx||]
+    nose | regIsTrial reg = icon "👃" "Schnupperer"
+         | otherwise = mempty
 
-    renderRacket | has_key   = renderRacketOrKey "🔑"
-                 | otherwise = renderRacketOrKey "🏸"
+    key | has_key = icon "🔑" "This player brings a key"
+        | otherwise = mempty
 
-    renderRacketOrKey symbol = [hsx|
+    icon :: Text -> Text -> Html
+    icon symbol title = [hsx|
          <div class="input-group-append">
-            <div class="input-group-text border bg-white">
-             {symbol :: Text}
-            </div>
+            <span class="input-group-text form-control bg-white" title={title} style="cursor:default">{symbol}</span>
          </div>
         |]
+
 
 renderEmpty :: Int -> Html
 renderEmpty n = [hsx|
