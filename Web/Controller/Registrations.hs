@@ -2,6 +2,7 @@ module Web.Controller.Registrations where
 
 import Web.Controller.Prelude
 import Web.View.Registrations.Index
+import Web.View.Registrations.Past
 import Web.View.Registrations.Trials
 
 import Data.Time.Zones
@@ -45,6 +46,24 @@ instance Controller RegistrationsController where
             pure (pd, now < pd_date pd, regs)
          )
         render TrialView { .. }
+
+    action PastAction {..} = autoRefresh do
+        (dateQ, pagination) <- query @Registration
+          |> orderByDesc #date
+          |> distinctOn #date
+          |> paginate
+
+        dates <- dateQ |> fetch >>= mapM (\r -> do
+            let d = r.date
+            regs <- query @Registration
+               |> filterWhere (#date, d)
+               |> orderBy #createdAt
+               |> fetch
+               >>= collectionFetchRelatedOrNothing #playerUser
+            pure (d, regs)
+         )
+
+        render PastView {..}
 
     action RegisterAction { fromTrial } = do
         needAuth fromTrial

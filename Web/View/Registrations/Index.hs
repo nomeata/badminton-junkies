@@ -34,6 +34,7 @@ instance View IndexView where
         </div>
        </div>
 
+       <!--
        <div class="col-lg-4">
         <div class="card mb-4 box-shadow md-4">
         <div class="card-header">
@@ -47,6 +48,7 @@ instance View IndexView where
         </div>
         </div>
        </div>
+       -->
 
        <div class="col-lg-4">
         <div class="card mb-4 box-shadow md-4">

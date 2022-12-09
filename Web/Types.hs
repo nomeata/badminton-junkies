@@ -11,6 +11,7 @@ data StaticController = WelcomeAction deriving (Eq, Show, Data)
 data RegistrationsController
     = RegistrationsAction
     | TrialsAction
+    | PastAction { page :: Maybe Integer }
     | RegisterAction { fromTrial :: !Text }
     | DeleteRegistrationAction { fromTrial :: !Text, registrationId :: !(Id Registration) }
     deriving (Eq, Show, Data)

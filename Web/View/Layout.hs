@@ -29,10 +29,11 @@ defaultLayout inner = H.docTypeHtml ! A.lang "en" $ [hsx|
       </div>
       <nav class="my-2 my-md-0 mr-md-3">
         <a href={RegistrationsAction} class={classes ["p-2 mx-1 btn text-dark border ", ("border-primary", isActivePath RegistrationsAction)]}>🏸</a>
-        <a href={TrialsAction} class={classes ["p-2 mx-1 btn text-dark border ", ("border-primary", isActivePath TrialsAction)]}>👃</a>
-        <a href={KeyHoldersAction} class={classes ["p-2 mx-1 btn text-dark border ", ("border-primary", isActivePath KeyHoldersAction)]}>🔑</a>
-        <a href={LogsAction Nothing} class={classes ["p-2 mx-1 btn text-dark border ", ("border-primary", isActivePath (LogsAction Nothing))]}>📓</a>
-        <a href={EditSessionAction} class={classes ["p-2 mx-1 btn text-dark border ", ("border-primary", isActivePath EditSessionAction)]}>🛠</a>
+        <a href={TrialsAction}        class={classes ["p-2 mx-1 btn text-dark border ", ("border-primary", isActivePath TrialsAction)]}>👃</a>
+        <a href={KeyHoldersAction}    class={classes ["p-2 mx-1 btn text-dark border ", ("border-primary", isActivePath KeyHoldersAction)]}>🔑</a>
+        <a href={LogsAction Nothing}  class={classes ["p-2 mx-1 btn text-dark border ", ("border-primary", isActivePath (LogsAction Nothing))]}>📓</a>
+        <a href={PastAction Nothing}  class={classes ["p-2 mx-1 btn text-dark border ", ("border-primary", isActivePath (PastAction Nothing))]}>📅</a>
+        <a href={EditSessionAction}   class={classes ["p-2 mx-1 btn text-dark border ", ("border-primary", isActivePath EditSessionAction)]}>🛠</a>
       </nav>
     </div>
 
