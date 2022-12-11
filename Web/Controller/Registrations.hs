@@ -49,6 +49,7 @@ instance Controller RegistrationsController where
 
     action PastAction {..} = autoRefresh do
         (dateQ, pagination) <- query @Registration
+          |> filterWherePast #date
           |> orderByDesc #date
           |> distinctOn #date
           |> paginate

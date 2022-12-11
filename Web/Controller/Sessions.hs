@@ -7,7 +7,9 @@ import Web.View.Sessions.Edit
 
 instance Controller SessionsController where
     action EditSessionAction = do
-        other_users <- query @User |> fetch
+        other_users <- query @User
+            |> orderByAsc #fullname
+            |> fetch
 
         let login_data = newRecord @LoginData
         render EditView { .. }
