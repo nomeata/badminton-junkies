@@ -133,7 +133,7 @@ signUpForm (Just (reg, pd, can_unregister)) _ = [hsx|
     delete | can_unregister = [hsx|
         <a href={DeleteRegistrationAction "main" (get #id reg)}
            class="js-delete form-control btn btn-warning border"
-           data-confirm="Do you want to unregister?">Unregister</a>
+           data-confirm="Do you want to unregister? Don't forget to tell the WhatsApp group!">Unregister</a>
       |]
            | otherwise = [hsx| |]
 
