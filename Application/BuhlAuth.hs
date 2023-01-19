@@ -37,20 +37,20 @@ buhlLogin username password = runExceptT $ do
         , "passed-ls-param"  `partText` ""
         , "rdr-buhlparam"    `partText` "1050105"
         ]
-    success <- orErr "admin-ajax.php did not return a success field" $
+    success <- orErr "/api/v1/login did not return a success field" $
         r ^? responseBody . key "success" . _Bool
     unless success $ do
-        msg <- orErr "admin-ajax.php signalled failure, but without a message field" $
+        msg <- orErr "/api/v1/login signalled failure, but without a message field" $
             r ^? responseBody . key "message" . _String
         throwE msg
-    redirHTML <- orErr "admin-ajax.php did not return a redirection" $
+    redirHTML <- orErr "/api/v1/login did not return a redirection" $
         r ^? responseBody . key "redirection" . _String
     (actionUrl, ticket) <- case parseTags (redirHTML :: Text) of
       [ TagOpen "form" [("action", actionUrl), ("method", "post"), ("id", _)]
         , TagOpen "input" [("type", "hidden"), ("value", ticket), ("name", "BuhlTicket")]
         , TagClose "input"
         , TagClose "form"] -> pure (actionUrl, ticket)
-      _ -> throwE "admin-adjax.php changes the redirection field, please let Joachim know"
+      _ -> throwE "/api/v1/login changes the redirection field, please let Joachim know"
 
     -- Annoyingly wreq insists on following redirects,
     -- even though we only care about the first request
