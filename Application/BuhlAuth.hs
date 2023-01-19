@@ -28,19 +28,14 @@ data BuhlAccountData = BuhlAccountData
 
 buhlLogin :: Text -> Text -> IO (Either Text BuhlAccountData)
 buhlLogin username password = runExceptT $ do
-    r <- liftIO $ post "https://www.buhl.de/mein-buhlkonto/wp-admin/admin-ajax.php"
-        [ "action" `partText` "LoginUser"
-        , "post_type" `partText` "POST"
-        , "param[0][name]" `partText` "eml-user"
-        , "param[0][value]" `partText` username
-        , "param[1][name]" `partText` "psw-user"
-        , "param[1][value]" `partText` password
-        , "param[2][name]" `partText` "passed-get-param"
-        , "param[2][value]" `partText` ""
-        , "param[3][name]" `partText` "passed-ls-param"
-        , "param[3][value]" `partText` ""
-        , "param[4][name]" `partText` "rdr-buhlparam"
-        , "param[4][value]" `partText` "1050105"
+    r <- liftIO $ post "https://www.buhl.de/mein-buhlkonto/wp-json/api/v1/login"
+        [ "action"           `partText` "LoginUser"
+        , "post_type"        `partText` "POST"
+        , "eml-user"         `partText` username
+        , "psw-user"         `partText` password
+        , "passed-get-param" `partText` ""
+        , "passed-ls-param"  `partText` ""
+        , "rdr-buhlparam"    `partText` "1050105"
         ]
     success <- orErr "admin-ajax.php did not return a success field" $
         r ^? responseBody . key "success" . _Bool
