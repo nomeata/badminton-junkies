@@ -1,0 +1,22 @@
+
+# Server provisioning script
+set -euo pipefail
+
+cd /home/ship/server &&
+set -o allexport; source /etc/shipnix/.env; set +o allexport &&
+echo "Bootstrapping IHP project..." &&
+nix-shell --run "make -s all .envrc" &&
+echo "Performing initial database operations..." &&
+echo "Dropping database schema public..." &&
+psql $DATABASE_URL -c "drop schema public cascade; create schema public;" &&
+echo "Creating schema migrations table..." &&
+psql $DATABASE_URL -c "CREATE TABLE IF NOT EXISTS schema_migrations (revision BIGINT NOT NULL UNIQUE);" &&
+echo "Importing IHP schema..." &&
+psql $DATABASE_URL < build/ihp-lib/IHPSchema.sql &&
+echo "Importing app schema..." &&
+psql $DATABASE_URL < Application/Schema.sql &&
+mkdir -p Application/Migration &&
+nix-shell --run "migrate" &&
+echo "Importing Fixtures.sql..." &&
+psql $DATABASE_URL < Application/Fixtures.sql
+

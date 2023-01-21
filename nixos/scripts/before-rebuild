@@ -1,0 +1,13 @@
+
+# Running scripts before rebuild are generally a last resort so use sparingly
+set -euo pipefail
+echo "Running before-rebuild"
+
+# Loads production environment variables
+set -o allexport; source /etc/shipnix/.env; set +o allexport
+cd /home/ship/server &&
+echo "Running database migrations..." &&
+mkdir -p Application/Migration &&
+nix-shell --run "migrate"
+
+  
