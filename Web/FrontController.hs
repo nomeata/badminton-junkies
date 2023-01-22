@@ -29,6 +29,7 @@ instance InitControllerContext WebApplication where
 
 initUser :: (?context :: ControllerContext, ?modelContext :: ModelContext) => IO ()
 initUser = do
+    redirectToUrl "https://badjunk.nomeata.de"
     sd <- getSession "userid" >>= \case
         Just uid -> do
             mbuser <- query @User
