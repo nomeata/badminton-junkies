@@ -3,4 +3,5 @@
 set -e
 echo "Running after-rebuild script"
 
-  
+sudo systemctl restart ship.service
+sudo systemctl restart ship_jobs.service
