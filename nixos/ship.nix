@@ -37,8 +37,8 @@
     # and your will need to manage authorized keys for root and ship user separately
     openssh.authorizedKeys.keyFiles = [ ./authorized_keys ];
     openssh.authorizedKeys.keys = [
-      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCdN5uww1gN8pGFR9/68qZexX+VPYSLmOCiLBd11HrwRm4wowD+01GRRQegTvQqSKfMvVF3SE7bAutZKx3YL9GBoYCCgcHowXqQlpqbFR3bIr8Euh7BechvCXWXiSAkhaUoOW4USW8ZlcQtHyqy4AbKlp2IOCR7M/IncfJM9rxZBPwDLDPzU498n/xlTC2FbHQNwpVP+nSQqJDcc97rwb8HfqhFpaTpvT6l9Bqwh11Y+VgcenEOzvcLQ694+mt+HApkZUBzuukzvu+iyewT5YPA12rEISKT7bhiYiy/vkva/SShXMRPOg6trW1pj4Q18SmtDgI0h16/oZBxUW0kSO6CzVXDR133tU8K+LPziYBm+8fiIySlxbKO70/t0Morujm/1OMgVYiPq1+uOHpT8mPhwm1lIcd95C9FnA+CmzOrKUWxy05iG68pqgMIAVKVczdpsYM3LOGgeasPtdjNgj5jhb4FqWtn2YU3fkBbUp5gHfZVlZ4XTgYmrAEH/6gXZ2s= ship@tite-ship
-"
+      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCdN5uww1gN8pGFR9/68qZexX+VPYSLmOCiLBd11HrwRm4wowD+01GRRQegTvQqSKfMvVF3SE7bAutZKx3YL9GBoYCCgcHowXqQlpqbFR3bIr8Euh7BechvCXWXiSAkhaUoOW4USW8ZlcQtHyqy4AbKlp2IOCR7M/IncfJM9rxZBPwDLDPzU498n/xlTC2FbHQNwpVP+nSQqJDcc97rwb8HfqhFpaTpvT6l9Bqwh11Y+VgcenEOzvcLQ694+mt+HApkZUBzuukzvu+iyewT5YPA12rEISKT7bhiYiy/vkva/SShXMRPOg6trW1pj4Q18SmtDgI0h16/oZBxUW0kSO6CzVXDR133tU8K+LPziYBm+8fiIySlxbKO70/t0Morujm/1OMgVYiPq1+uOHpT8mPhwm1lIcd95C9FnA+CmzOrKUWxy05iG68pqgMIAVKVczdpsYM3LOGgeasPtdjNgj5jhb4FqWtn2YU3fkBbUp5gHfZVlZ4XTgYmrAEH/6gXZ2s= ship@tite-ship"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJRd0CZZQXyKTEQSEtrIpcTg15XEoRjuYodwo0nr5hNj jojo@kirk"
     ];
   };
 
