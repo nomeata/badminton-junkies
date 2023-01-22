@@ -1,5 +1,7 @@
 module Web.FrontController where
 
+import Network.Wai (requestHeaderHost)
+
 import IHP.RouterPrelude
 import Web.Controller.Prelude
 import Web.View.Layout (defaultLayout)
@@ -29,7 +31,8 @@ instance InitControllerContext WebApplication where
 
 initUser :: (?context :: ControllerContext, ?modelContext :: ModelContext) => IO ()
 initUser = do
-    redirectToUrl "https://badjunk.nomeata.de"
+    when (requestHeaderHost request == Just "badjunk.ihpcloud.com") $
+        redirectToUrl "https://badjunk.nomeata.de"
     sd <- getSession "userid" >>= \case
         Just uid -> do
             mbuser <- query @User
