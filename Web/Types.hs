@@ -75,8 +75,9 @@ regIsTrial reg = isNothing reg.playerUser
 
 
 data PlayDate = PlayDate
-  { pd_date           :: UTCTime
-  , pd_reg_opens      :: UTCTime
-  , pd_reg_block_over :: UTCTime
+  { pd_date            :: UTCTime
+  , pd_reg_opens       :: UTCTime
+  , pd_trial_reg_opens :: UTCTime
+  , pd_reg_block_over  :: UTCTime
   }
 

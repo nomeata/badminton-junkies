@@ -95,7 +95,7 @@ renderUpcomingDate (pd, open, regs) = [hsx|
     lines = forEach (zip [1..] (map R regs |> fillUp playSlots E)) (renderEntry open)
 
 renderRegDate pd True = [hsx|
-   Start of registration: {pd |> pd_reg_opens |> timeAgo}<br/>
+   Start of registration: {pd |> pd_trial_reg_opens |> timeAgo}<br/>
 |]
 renderRegDate pd False = [hsx|
    Registration closed

@@ -27,7 +27,7 @@ instance Controller RegistrationsController where
                >>= collectionFetchRelatedOrNothing #playerUser
                >>= pure .  map (\r -> (r, has_key (r.playerUser)))
 
-            pure (pd, now < pd_date pd, regs)
+            pure (pd, pd_reg_opens pd <= now && now < pd_date pd, regs)
          )
 
 
@@ -43,7 +43,7 @@ instance Controller RegistrationsController where
                |> orderBy #createdAt
                |> fetch
                >>= collectionFetchRelatedOrNothing #playerUser
-            pure (pd, now < pd_date pd, regs)
+            pure (pd, pd_trial_reg_opens pd <= now && now < pd_date pd, regs)
          )
         render TrialView { .. }
 
@@ -146,10 +146,13 @@ isPlayingDateOpen fromTrial d = do
     case find (\pd -> d == pd_date pd) pds of
       Nothing -> err fromTrial "This playing date is not up for registration"
       Just pd -> do
-        unless (now < pd_date pd) $
-          err fromTrial "This playing date has already started"
         unless (pd_reg_opens pd <= now) $
           err fromTrial "This playing date is not yet open for registration"
+        when (fromTrial == "trials") $ -- code smell, should be a data type
+          unless (pd_trial_reg_opens pd <= now) $
+            err fromTrial "This playing date is not yet open for registration for trials"
+        unless (now < pd_date pd) $
+          err fromTrial "This playing date has already started"
 
 -- Query parameters cannot be Bool :-(
 ok, err :: (?context::ControllerContext) => Text -> Text -> IO a
@@ -167,15 +170,20 @@ upcomingDates = do
     let LocalTime today _ = utcToLocalTimeTZ tz now
     pure $
      [ PlayDate
-       { pd_date = localTimeToUTCTZ tz (LocalTime day time)
-       , pd_reg_opens = localTimeToUTCTZ tz (LocalTime (reg_days_diff `addDays` day) reg_time)
-       , pd_reg_block_over = localTimeToUTCTZ tz (LocalTime day (TimeOfDay 20 30 00))
+       { pd_date =
+            localTimeToUTCTZ tz (LocalTime day time)
+       , pd_reg_opens =
+            localTimeToUTCTZ tz (LocalTime (reg_days_diff `addDays` day) reg_time)
+       , pd_trial_reg_opens =
+            localTimeToUTCTZ tz (LocalTime (trial_reg_days_diff `addDays` day) trial_reg_time)
+       , pd_reg_block_over =
+            localTimeToUTCTZ tz (LocalTime day (TimeOfDay 20 30 00))
        }
      | day <- [today .. 6 `addDays` today]
-     , (time, reg_days_diff, reg_time) <- case dayOfWeek day of
-        Tuesday -> [ (TimeOfDay 17 00 00, -6, TimeOfDay 20 30 00) ]
-        Sunday ->  [ (TimeOfDay 14 00 00, -6, TimeOfDay 20 30 00)
-                   , (TimeOfDay 17 00 00, -6, TimeOfDay 20 30 00) ]
+     , (time, reg_days_diff, reg_time, trial_reg_days_diff, trial_reg_time) <- case dayOfWeek day of
+        Tuesday -> [ (TimeOfDay 17 00 00, -6, TimeOfDay 20 30 00, -1, TimeOfDay 17 00 00) ]
+        Sunday ->  [ (TimeOfDay 14 00 00, -6, TimeOfDay 20 30 00, -1, TimeOfDay 14 00 00)
+                   , (TimeOfDay 17 00 00, -6, TimeOfDay 20 30 00, -6, TimeOfDay 20 30 00) ]
         _      ->  []
      ]
 
