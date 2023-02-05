@@ -5,7 +5,7 @@ import Data.Time.Clock.POSIX
 
 
 data TrialView = TrialView
-  { upcoming_dates :: [(PlayDate, Bool, [Reg])]
+  { upcoming_dates :: [(PlayDate, RegOpenness, [Reg])]
   }
 
 data Entry = R (Reg) | E
@@ -18,7 +18,7 @@ instance View TrialView where
       </div>
     |]
 
-signUpRow :: [(PlayDate, Bool, [Reg])] -> Html
+signUpRow :: [(PlayDate, RegOpenness, [Reg])] -> Html
 signUpRow upcoming_dates
     | Nothing <- fromFrozenContext @(Maybe SessionData)
     = [hsx| |]
@@ -39,7 +39,7 @@ signUpRow upcoming_dates
     |]
 
 signUpForm ::
-    [(PlayDate, Bool, [Reg])] -> Html
+    [(PlayDate, RegOpenness, [Reg])] -> Html
 
 signUpForm upcoming_dates = [hsx|
    <form method="POST" class="mb-2" action={RegisterAction "trials"}>
@@ -52,8 +52,8 @@ signUpForm upcoming_dates = [hsx|
    </form>
   |]
   where
-  signUpButton :: (PlayDate, Bool, [Reg]) -> Html
-  signUpButton (pd, True, regs) = [hsx|
+  signUpButton :: (PlayDate, RegOpenness, [Reg]) -> Html
+  signUpButton (pd, Open, regs) = [hsx|
    <div class="form-group">
    <div class="input-group">
       <button type="submit" class={cls} name="date" value={inputValue (pd_date pd)}>{pd |> pd_date |> renderDate}</button>
@@ -64,7 +64,7 @@ signUpForm upcoming_dates = [hsx|
         cls | isWaitlist (length regs + 1) = "form-control btn-warning" :: Text
             | otherwise                    = "form-control btn-primary"
 
-  signUpButton (pd, False, _regs) = [hsx|
+  signUpButton (pd, Closed, _regs) = [hsx|
    <div class="form-group">
    <div class="input-group">
      <button class="form-control" disabled="True" title="Registration closed.">{pd |> pd_date |> renderDate}</button>
@@ -72,8 +72,16 @@ signUpForm upcoming_dates = [hsx|
    </div>
    |]
 
+  signUpButton (pd, NotYet _, _regs) = [hsx|
+   <div class="form-group">
+   <div class="input-group">
+     <button class="form-control" disabled="True" title="Registration not yet open">{pd |> pd_date |> renderDate}</button>
+   </div>
+   </div>
+   |]
 
-renderUpcomingDate :: (PlayDate, Bool, [Reg]) -> Html
+
+renderUpcomingDate :: (PlayDate, RegOpenness, [Reg]) -> Html
 renderUpcomingDate (pd, open, regs) = [hsx|
    <div class="col-lg-4">
    <div class="card mb-4 box-shadow md-4">
@@ -92,12 +100,15 @@ renderUpcomingDate (pd, open, regs) = [hsx|
    </div>
    </div>
 |] where
-    lines = forEach (zip [1..] (map R regs |> fillUp playSlots E)) (renderEntry open)
+    lines = forEach (zip [1..] (map R regs |> fillUp playSlots E)) renderEntry
 
-renderRegDate pd True = [hsx|
-   Start of registration: {pd |> pd_trial_reg_opens |> timeAgo}<br/>
+renderRegDate pd (NotYet date) = [hsx|
+   Registration starts {date |> timeAgo}<br/>
 |]
-renderRegDate pd False = [hsx|
+renderRegDate pd Open = [hsx|
+   Registration open
+|]
+renderRegDate pd Closed = [hsx|
    Registration closed
 |]
 
@@ -110,8 +121,8 @@ renderDate t = [hsx|
 |]
 -- TODO: Not timezone safe  (dateTime uses browser timezone, utctDay UTC)
 
-renderEntry open (n, R r) = renderReg open n r
-renderEntry open (n, E) = renderEmpty n
+renderEntry (n, R r) = renderReg n r
+renderEntry (n, E) = renderEmpty n
 
 renderPosition :: Int -> Html
 renderPosition n | isWaitlist n = [hsx|
@@ -126,8 +137,8 @@ renderPosition n | isWaitlist n = [hsx|
   |]
 
 
-renderReg :: Bool -> Int -> Reg -> Html
-renderReg open n reg = [hsx|
+renderReg :: Int -> Reg -> Html
+renderReg n reg = [hsx|
    <div class="form-group mb-2">
    <div class="input-group">
      {renderPosition n}

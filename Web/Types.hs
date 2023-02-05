@@ -81,3 +81,5 @@ data PlayDate = PlayDate
   , pd_reg_block_over  :: UTCTime
   }
 
+data RegOpenness = NotYet UTCTime | Open | Closed
+

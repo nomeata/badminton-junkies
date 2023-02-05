@@ -27,7 +27,7 @@ instance Controller RegistrationsController where
                >>= collectionFetchRelatedOrNothing #playerUser
                >>= pure .  map (\r -> (r, has_key (r.playerUser)))
 
-            pure (pd, pd_reg_opens pd <= now && now < pd_date pd, regs)
+            pure (pd, isRegOpen "main" now pd, regs)
          )
 
 
@@ -43,7 +43,7 @@ instance Controller RegistrationsController where
                |> orderBy #createdAt
                |> fetch
                >>= collectionFetchRelatedOrNothing #playerUser
-            pure (pd, pd_trial_reg_opens pd <= now && now < pd_date pd, regs)
+            pure (pd, isRegOpen "trials" now pd, regs)
          )
         render TrialView { .. }
 
@@ -139,20 +139,27 @@ instance Controller RegistrationsController where
             deleteRecord reg
         ok fromTrial $ "You have unregistered " <> regName reg' <> "."
 
+isRegOpen fromTrial now pd
+    | fromTrial == "trials" && now < pd_trial_reg_opens pd
+    = NotYet  (pd_trial_reg_opens pd)
+    | now < pd_reg_opens pd
+    = NotYet  (pd_reg_opens pd)
+    | pd_date pd < now
+    = Closed
+    | otherwise
+    = Open
 
 isPlayingDateOpen fromTrial d = do
     now <- getCurrentTime
     pds <- upcomingDates
     case find (\pd -> d == pd_date pd) pds of
       Nothing -> err fromTrial "This playing date is not up for registration"
-      Just pd -> do
-        unless (pd_reg_opens pd <= now) $
-          err fromTrial "This playing date is not yet open for registration"
-        when (fromTrial == "trials") $ -- code smell, should be a data type
-          unless (pd_trial_reg_opens pd <= now) $
-            err fromTrial "This playing date is not yet open for registration for trials"
-        unless (now < pd_date pd) $
-          err fromTrial "This playing date has already started"
+      Just pd -> case isRegOpen fromTrial now pd of
+        NotYet date -> do
+          date' <- prettyTime date
+          err fromTrial $ "This playing date is not yet open for registration. It opens in " <> date'
+        Closed -> err fromTrial "This playing date has already started"
+        Open -> pure ()
 
 -- Query parameters cannot be Bool :-(
 ok, err :: (?context::ControllerContext) => Text -> Text -> IO a
