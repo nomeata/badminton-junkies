@@ -1,5 +1,22 @@
 {
   "nodes": {
+    "ihp": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1675671596,
+        "narHash": "sha256-LUIC7Olu2qTxZwgkgVpmTgCEQYDlwvLQFQt3Ox/Vm48=",
+        "owner": "digitallyinduced",
+        "repo": "ihp",
+        "rev": "7fba935ca694deabaaf43b73d867003cc2a2c5b0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "digitallyinduced",
+        "ref": "v1.0.1",
+        "repo": "ihp",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1673957332,
@@ -32,6 +49,7 @@
     },
     "root": {
       "inputs": {
+        "ihp": "ihp",
         "nixpkgs": "nixpkgs",
         "nixpkgs-unstable": "nixpkgs-unstable"
       }
