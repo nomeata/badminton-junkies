@@ -39,12 +39,14 @@
         projectPath = ./.;
         optimized = true;
     };
+
     in
     {
-      packages.${system} = {
+      packages.${system} = with nixpkgs.legacyPackages.${system}; {
         app = ihpApp;
-        docker = nixpkgs.legacyPackages.${system}.dockerTools.buildImage {
-         name = "hello-docker";
+        docker = dockerTools.buildImage {
+         name = "badjunk";
+         contents = [ cacert tzdata ];
          config = {
            Cmd = [ "${ihpApp}/bin/RunProdServer" ];
          };
