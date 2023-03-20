@@ -4,15 +4,20 @@ import Application.BuhlAuth
 
 import Web.Controller.Prelude
 import Web.View.Sessions.Edit
+import Web.View.Sessions.Login
 
 instance Controller SessionsController where
-    action EditSessionAction = do
-        other_users <- query @User
-            |> orderByAsc #fullname
-            |> fetch
-
-        let login_data = newRecord @LoginData
-        render EditView { .. }
+    action EditSessionAction = fromContext @(Maybe SessionData) >>= \case
+        Just sd -> do
+            -- User is logged in
+            other_users <- query @User
+                |> orderByAsc #fullname
+                |> fetch
+            render EditView { .. }
+        Nothing -> do
+            -- User is not logged in
+            let login_data = newRecord @LoginData
+            render LoginView { .. }
 
     action CreateSessionAction = do
         other_users <- query @User |> fetch
