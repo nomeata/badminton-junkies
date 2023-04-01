@@ -9,7 +9,7 @@ data StatsView = StatsView
 
 instance View StatsView where
     html StatsView { .. } = [hsx|
-        <canvas id="myChart"></canvas>
+        <canvas id="myChart" height="200%"></canvas>
  	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         {dataDef |> preEscapedToHtml}
         <script>
@@ -26,6 +26,7 @@ instance View StatsView where
               type: 'bar',
               data: data,
               options: {
+                animation: false,
                 indexAxis: 'y',
                 // Elements options apply to all of the options unless overridden in a dataset
                 // In this case, we are setting the border of each horizontal bar to be 2px wide
@@ -51,12 +52,13 @@ instance View StatsView where
             new Chart(ctx, config);
         </script>
       |]
+      -- This is ugly...
       where names = T.intercalate ", " $ map (quote . maybe "👃" userName . fst) regCount
-            -- TODO: Escape for JS
             quote s = "'" <> T.concatMap esc s <> "'"
             esc '\\' = "\\\\"
             esc '\'' = "\\'"
             esc '\"' = "\\\""
+            esc '<' = "\\u003c"
             esc c = T.singleton c
             counts = T.intercalate ", " $ map (tshow . snd) regCount
             dataDef = "<script>const names = [" <> names <> "]; counts = [" <> counts <> "]</script>"
