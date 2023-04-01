@@ -4,6 +4,7 @@ import Web.Controller.Prelude
 import Web.View.Registrations.Index
 import Web.View.Registrations.Past
 import Web.View.Registrations.Trials
+import Web.View.Registrations.Stats
 
 import Data.Time.Zones
 import Control.Monad.Trans.Except
@@ -65,6 +66,23 @@ instance Controller RegistrationsController where
          )
 
         render PastView {..}
+
+    action StatsAction = autoRefresh do
+        needAuth "main"
+        trackTableRead "registrations"
+        regCount' :: [(Maybe (Id User), Int)] <- sqlQuery
+            "SELECT player_user, count(*) as n FROM registrations \
+            \WHERE date < NOW() - interval '3 months' \
+            \GROUP BY player_user \
+            \ORDER BY n DESC" ()
+        regCount <- forM regCount' \case
+            (Nothing, n) -> pure $ (Nothing, n)
+            (Just id, n) -> do
+                user <- fetch id
+                pure (Just user, n)
+
+        render StatsView {..}
+
 
     action RegisterAction { fromTrial } = do
         needAuth fromTrial

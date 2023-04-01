@@ -14,6 +14,7 @@ data RegistrationsController
     | PastAction { page :: Maybe Integer }
     | RegisterAction { fromTrial :: !Text }
     | DeleteRegistrationAction { fromTrial :: !Text, registrationId :: !(Id Registration) }
+    | StatsAction
     deriving (Eq, Show, Data)
 
 newtype LogsController

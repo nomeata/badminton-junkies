@@ -31,8 +31,9 @@ defaultLayout inner = H.docTypeHtml ! A.lang "en" $ [hsx|
         <a href={RegistrationsAction} title="Register"       class={classes ["p-2 mx-1 btn text-dark border ", ("border-primary", isActivePath RegistrationsAction)]}>🏸</a>
         <a href={TrialsAction}        title="Trial signup"   class={classes ["p-2 mx-1 btn text-dark border ", ("border-primary", isActivePath TrialsAction)]}>👃</a>
         <a href={KeyHoldersAction}    title="Keys"           class={classes ["p-2 mx-1 btn text-dark border ", ("border-primary", isActivePath KeyHoldersAction)]}>🔑</a>
-        <a href={LogsAction Nothing}  title="Log of actions" class={classes ["p-2 mx-1 btn text-dark border ", ("border-primary", isActivePath (LogsAction Nothing))]}>📓</a>
         <a href={PastAction Nothing}  title="Past days"      class={classes ["p-2 mx-1 btn text-dark border ", ("border-primary", isActivePath (PastAction Nothing))]}>📅</a>
+        <a href={LogsAction Nothing}  title="Log of actions" class={classes ["p-2 mx-1 btn text-dark border ", ("border-primary", isActivePath (LogsAction Nothing))]}>📓</a>
+        <a href={StatsAction}         title="Statistis     " class={classes ["p-2 mx-1 btn text-dark border ", ("border-primary", isActivePath StatsAction)]}>📊</a>
         <a href={EditSessionAction}   title="Settings"       class={classes ["p-2 mx-1 btn text-dark border ", ("border-primary", isActivePath EditSessionAction)]}>🛠</a>
       </nav>
     </div>
