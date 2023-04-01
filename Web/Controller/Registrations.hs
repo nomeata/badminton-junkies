@@ -72,7 +72,7 @@ instance Controller RegistrationsController where
         trackTableRead "registrations"
         regCount' :: [(Maybe (Id User), Int)] <- sqlQuery
             "SELECT player_user, count(*) as n FROM registrations \
-            \WHERE date < NOW() - interval '3 months' \
+            \WHERE date > NOW() - interval '3 months' \
             \GROUP BY player_user \
             \ORDER BY n DESC" ()
         regCount <- forM regCount' \case
