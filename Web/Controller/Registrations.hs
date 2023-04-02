@@ -70,16 +70,17 @@ instance Controller RegistrationsController where
     action StatsAction = autoRefresh do
         needAuth "main"
         trackTableRead "registrations"
-        regCount' :: [(Maybe (Id User), Int)] <- sqlQuery
-            "SELECT player_user, count(*) as n FROM registrations \
+        regCount' :: [(Maybe (Id User), Maybe Text, Int)] <- sqlQuery
+            "SELECT player_user, player_name, count(*) as n FROM registrations \
             \WHERE date > NOW() - interval '3 months' \
-            \GROUP BY player_user \
+            \GROUP BY player_user, player_name \
             \ORDER BY n DESC" ()
         regCount <- forM regCount' \case
-            (Nothing, n) -> pure $ (Nothing, n)
-            (Just id, n) -> do
+            (Nothing, Just n, c) -> pure $ (Right n, c)
+            (Just id, _, c) -> do
                 user <- fetch id
-                pure (Just user, n)
+                pure (Left user, c)
+            (Nothing, Nothing, c) -> pure $ (Right "?", c)
 
         render StatsView {..}
 
