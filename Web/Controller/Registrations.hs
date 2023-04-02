@@ -71,8 +71,14 @@ instance Controller RegistrationsController where
         needAuth "main"
         trackTableRead "registrations"
         regCount' :: [(Maybe (Id User), Maybe Text, Int)] <- sqlQuery
-            "SELECT player_user, player_name, count(*) as n FROM registrations \
-            \WHERE date > NOW() - interval '3 months' \
+            "SELECT player_user, player_name, count(*) AS n \
+            \FROM (\
+              \SELECT player_user, player_name, \
+              \ RANK () OVER (PARTITION BY date ORDER BY created_at) AS pos \
+              \ FROM registrations \
+              \ WHERE date > NOW() - interval '3 months' \
+            \  ) AS ranks \
+            \WHERE pos <= 9 \
             \GROUP BY player_user, player_name \
             \ORDER BY n DESC" ()
         regCount <- forM regCount' \case
