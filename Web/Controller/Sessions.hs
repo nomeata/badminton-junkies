@@ -33,7 +33,7 @@ instance Controller SessionsController where
                 buhlLogin (get #email login_data) (get #password login_data) >>= \case
                     Left msg -> do
                         setErrorMessage $ "Login failed: " <> msg
-                        render EditView { .. }
+                        render LoginView { .. }
                     Right (BuhlAccountData {buhlId, firstName, lastName, email, clubs}) -> do
                         unless (badmintonJunkiesId `elem` clubs) $ do
                             setErrorMessage "It looks like you are not a member yet."
