@@ -8,9 +8,11 @@
 
   nix.settings.substituters = [
     "https://digitallyinduced.cachix.org"
+    "https://cache.garnix.io"
   ];
   nix.settings.trusted-public-keys = [
     "digitallyinduced.cachix.org-1:y+wQvrnxQ+PdEsCt91rmvv39qRCYzEgGQaldK26hCKE="
+    "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
   ];
   swapDevices = [{ device = "/swapfile"; size = 2048; }];
 
