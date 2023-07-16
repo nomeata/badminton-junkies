@@ -215,7 +215,7 @@ upcomingDates = do
      , (time, reg_days_diff, reg_time, trial_reg_days_diff, trial_reg_time) <- case dayOfWeek day of
         Tuesday -> [ (TimeOfDay 17 00 00, -6, TimeOfDay 20 30 00, -1, TimeOfDay 17 00 00) ]
         Sunday ->  [ (TimeOfDay 14 00 00, -6, TimeOfDay 20 30 00, -1, TimeOfDay 14 00 00)
-                   , (TimeOfDay 17 00 00, -6, TimeOfDay 20 30 00, -6, TimeOfDay 20 30 00) ]
+                   , (TimeOfDay 17 00 00, -6, TimeOfDay 20 30 00, -1, TimeOfDay 17 00 00) ]
         _      ->  []
      ]
 
