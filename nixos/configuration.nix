@@ -36,6 +36,8 @@
   networking.firewall.enable = true;
   networking.firewall.allowedTCPPorts = [ 80 443 22 ];
 
+  services.journald.extraConfig = "SystemMaxUse=100M";
+
   programs.vim.defaultEditor = true;
 
   services.fail2ban.enable = true;
