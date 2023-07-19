@@ -2,13 +2,12 @@ module Web.View.Sessions.Edit where
 import Web.View.Prelude
 
 data EditView = EditView
-    { other_users :: [User]
+    { sessionData :: SessionData
+    , other_users :: [User]
     }
 
 instance View EditView where
-    html EditView{..} = case fromFrozenContext :: Maybe SessionData of
-        Nothing -> error "Should not happen"
-        Just sd -> editView sd other_users
+    html EditView{..} = editView sessionData other_users
 
 editView sd other_users = [hsx|
     <div class="h-100" id="sessions-new">

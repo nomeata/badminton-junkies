@@ -8,7 +8,7 @@ import Web.View.Sessions.Login
 
 instance Controller SessionsController where
     action EditSessionAction = fromContext @(Maybe SessionData) >>= \case
-        Just sd -> do
+        Just sessionData -> do
             -- User is logged in
             other_users <- query @User
                 |> orderByAsc #fullname
@@ -28,7 +28,7 @@ instance Controller SessionsController where
 
         flip ifValid login_data $ \case
             Left login_data ->
-                render EditView { .. }
+                render LoginView { .. }
             Right login_data -> do
                 buhlLogin (get #email login_data) (get #password login_data) >>= \case
                     Left msg -> do
@@ -37,7 +37,7 @@ instance Controller SessionsController where
                     Right (BuhlAccountData {buhlId, firstName, lastName, email, clubs}) -> do
                         unless (badmintonJunkiesId `elem` clubs) $ do
                             setErrorMessage "It looks like you are not a member yet."
-                            render EditView { .. }
+                            render LoginView { .. }
 
                         let fullName = firstName <> " " <> lastName
 
