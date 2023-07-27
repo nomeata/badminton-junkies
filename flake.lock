@@ -105,17 +105,17 @@
         "systems": "systems"
       },
       "locked": {
-        "lastModified": 1689949405,
-        "narHash": "sha256-o0ZSDaDFgwbXqozHfcXKxW4FeF7JqaGprAh6r7NhvhE=",
+        "lastModified": 1690319877,
+        "narHash": "sha256-YduIBVQKCP8vEhD0kK/HHX5SpRRJpnlLArH9arlaHU4=",
         "owner": "digitallyinduced",
         "repo": "ihp",
-        "rev": "e6c6eaf1d089423a03e586cd25d1eda39f5a6b11",
+        "rev": "217c1aaef7877220cc510714a81e25be2f019d22",
         "type": "github"
       },
       "original": {
         "owner": "digitallyinduced",
-        "ref": "v1.1",
         "repo": "ihp",
+        "rev": "217c1aaef7877220cc510714a81e25be2f019d22",
         "type": "github"
       }
     },
