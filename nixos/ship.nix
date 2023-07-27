@@ -23,7 +23,7 @@
     enable = true;
     # ship-nix uses SSH keys to gain access to the server
     # Manage permitted public keys in the `authorized_keys` file
-    passwordAuthentication = false;
+    settings.passwordAuthentication = false;
     #  permitRootLogin = "no";
   };
 
