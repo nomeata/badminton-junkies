@@ -1,7 +1,9 @@
-
 # Actions to be run after a server is rebuilt, if needed
 set -e
 echo "Running after-rebuild script"
-
+# Restarting systemctl services makes sure environment variables are properly reloaded in cases where deploys are running and code hasn't changed
 sudo systemctl restart ship.service
-#sudo systemctl restart ship_jobs.service
+# Enable if you start using jobs
+# sudo systemctl restart ship_jobs.service
+
+

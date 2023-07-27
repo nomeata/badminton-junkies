@@ -1,4 +1,4 @@
-{ config, pkgs, modulesPath, lib, environment, ... }:
+{ config, pkgs, modulesPath, lib, environment, ihp-migrate, ... }:
 {
   imports = lib.optional (builtins.pathExists ./do-userdata.nix) ./do-userdata.nix ++ [
     (modulesPath + "/virtualisation/digital-ocean-config.nix")
@@ -14,13 +14,14 @@
     "digitallyinduced.cachix.org-1:y+wQvrnxQ+PdEsCt91rmvv39qRCYzEgGQaldK26hCKE="
     "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
   ];
+
   swapDevices = [{ device = "/swapfile"; size = 2048; }];
 
   # Add system-level packages for your server here
   environment.systemPackages = with pkgs; [
     bash
     jc
-    direnv
+    ihp-migrate
   ];
 
   # Loads all environment variables into shell. Remove this if you don't want this enabled

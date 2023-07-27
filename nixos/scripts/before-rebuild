@@ -1,13 +1,14 @@
-
-# Running scripts before rebuild are generally a last resort so use sparingly
+# This script is run before rebuilding the server
 set -euo pipefail
-echo "Running before-rebuild"
 
 # Loads production environment variables
 set -o allexport; source /etc/shipnix/.env; set +o allexport
-cd /home/ship/server &&
-echo "Running database migrations..." &&
-mkdir -p Application/Migration &&
-nix-shell --run "migrate"
+cd /home/ship/server
 
-  
+# Checks if the `migrate` binary is installed as a system package and if the `Application/Migration` directory exists
+if command -v migrate >/dev/null 2>&1 && [ -d "Application/Migration" ]; then
+    echo "Running database migrations..."
+    migrate
+else
+    echo "Skipping..."
+fi

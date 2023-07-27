@@ -1,6 +1,5 @@
-{ config, lib, pkgs, environment, ... }:
+{ config, lib, pkgs, environment, ihpApp, ... }:
 let
-  ihpApp = import ../.;
   # TODO: Enable SSL/HTTPS when your domain records are hooked up
   # By enabling SSL, you accept the terms and conditions of LetsEncrypt
   httpsEnabled = true;
@@ -47,7 +46,7 @@ in
 
   services.postgresql = {
     enable = true;
-    package = pkgs.postgresql;
+    package = pkgs.postgresql_14;
     ensureDatabases = [ "defaultdb" ];
     ensureUsers = [
       {
@@ -63,7 +62,6 @@ in
       local all all trust
       host all all 127.0.0.1/32 trust
       host all all ::1/128 trust
-      host defaultdb shipadmin 0.0.0.0/0 md5
       host all all 0.0.0.0/0 reject
     '';
   };
