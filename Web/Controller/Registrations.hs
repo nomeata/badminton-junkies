@@ -5,6 +5,11 @@ import Web.View.Registrations.Index
 import Web.View.Registrations.Past
 import Web.View.Registrations.Trials
 import Web.View.Registrations.Stats
+import Web.View.Registrations.Calendar
+
+import Network.Wai (responseLBS)
+import Network.HTTP.Types (status200)
+import Network.HTTP.Types.Header
 
 import Data.Time.Zones
 import Control.Monad.Trans.Except
@@ -90,6 +95,21 @@ instance Controller RegistrationsController where
 
         render StatsView {..}
 
+    action CalendarAction = do
+        now <- getCurrentTime
+
+        upcoming_dates <- upcomingDates >>= mapM (\pd -> do
+            let d = get #pd_date pd
+            regs <- query @Registration
+               |> filterWhere (#date, d)
+               |> orderBy #createdAt
+               |> fetch
+               >>= collectionFetchRelatedOrNothing #playerUser
+            pure (pd, regs)
+            )
+
+        respondAndExit $ responseLBS status200 [(hContentType, "text/calendar")] $
+           renderCalendar CalendarView { .. }
 
     action RegisterAction { fromTrial } = do
         needAuth fromTrial
@@ -204,6 +224,8 @@ upcomingDates = do
      [ PlayDate
        { pd_date =
             localTimeToUTCTZ tz (LocalTime day time)
+       , pd_until =
+            localTimeToUTCTZ tz ((3600*hours) `addLocalTime` (LocalTime day time))
        , pd_reg_opens =
             localTimeToUTCTZ tz (LocalTime (reg_days_diff `addDays` day) reg_time)
        , pd_trial_reg_opens =
@@ -212,11 +234,12 @@ upcomingDates = do
             localTimeToUTCTZ tz (LocalTime day (TimeOfDay 20 30 00))
        }
      | day <- [today .. 6 `addDays` today]
-     , (time, reg_days_diff, reg_time, trial_reg_days_diff, trial_reg_time) <- case dayOfWeek day of
-        Tuesday -> [ (TimeOfDay 17 00 00, -6, TimeOfDay 20 30 00, -1, TimeOfDay 17 00 00) ]
-        Sunday ->  [ (TimeOfDay 14 00 00, -6, TimeOfDay 20 30 00, -1, TimeOfDay 14 00 00)
-                   , (TimeOfDay 17 00 00, -6, TimeOfDay 20 30 00, -1, TimeOfDay 17 00 00) ]
-        _      ->  []
+     , (time, reg_days_diff, reg_time, trial_reg_days_diff, trial_reg_time, hours) <-
+        case dayOfWeek day of
+            Tuesday -> [ (TimeOfDay 17 00 00, -6, TimeOfDay 20 30 00, -1, TimeOfDay 17 00 00, 2) ]
+            Sunday ->  [ (TimeOfDay 14 00 00, -6, TimeOfDay 20 30 00, -1, TimeOfDay 14 00 00, 3)
+                       , (TimeOfDay 17 00 00, -6, TimeOfDay 20 30 00, -1, TimeOfDay 17 00 00, 3) ]
+            _      ->  []
      ]
 
 needAuth :: (?context::ControllerContext) => Text -> IO ()

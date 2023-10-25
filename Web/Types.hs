@@ -10,6 +10,7 @@ data StaticController = WelcomeAction deriving (Eq, Show, Data)
 
 data RegistrationsController
     = RegistrationsAction
+    | CalendarAction
     | TrialsAction
     | PastAction { page :: Maybe Integer }
     | RegisterAction { fromTrial :: !Text }
@@ -77,6 +78,7 @@ regIsTrial reg = isNothing reg.playerUser
 
 data PlayDate = PlayDate
   { pd_date            :: UTCTime
+  , pd_until           :: UTCTime
   , pd_reg_opens       :: UTCTime
   , pd_trial_reg_opens :: UTCTime
   , pd_reg_block_over  :: UTCTime

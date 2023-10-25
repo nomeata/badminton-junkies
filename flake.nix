@@ -36,6 +36,7 @@
                         wreq
                         tagsoup
                         modern-uri
+                        iCalendar
                     ];
                 };
             };
