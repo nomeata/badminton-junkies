@@ -8,7 +8,7 @@ import Web.View.Registrations.Stats
 import Web.View.Registrations.Calendar
 
 import Network.Wai (responseLBS)
-import Network.HTTP.Types (status200)
+import Network.HTTP.Types (status200, status404)
 import Network.HTTP.Types.Header
 
 import Data.Time.Zones
@@ -95,8 +95,15 @@ instance Controller RegistrationsController where
 
         render StatsView {..}
 
-    action CalendarAction = do
+    action (CalendarAction mbuid) = do
         now <- getCurrentTime
+
+        forM_ mbuid $ \uid ->
+            fetchOneOrNothing uid >>= \case
+                Just _ -> pure ()
+                Nothing -> respondAndExit $
+                    responseLBS status404 [(hContentType, "text/plain")]
+                        "Cannot produce calendar, user unknown"
 
         upcoming_dates <- upcomingDates >>= mapM (\pd -> do
             let d = get #pd_date pd
@@ -107,6 +114,12 @@ instance Controller RegistrationsController where
                >>= collectionFetchRelatedOrNothing #playerUser
             pure (pd, regs)
             )
+
+        upcoming_dates <- return $ case mbuid of
+            Just uid -> filter (\(_, regs) -> any (\r -> case r.playerUser of
+                Just u -> u.id == uid
+                Nothing -> False) regs) upcoming_dates
+            Nothing -> upcoming_dates
 
         respondAndExit $ responseLBS status200 [(hContentType, "text/calendar")] $
            renderCalendar CalendarView { .. }

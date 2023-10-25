@@ -40,8 +40,9 @@ instance View IndexView where
         <h2>Calendar</h2>
         </div>
         <div class="card-body">
-        <p>You can import the upcoming dates into your calendar app, using the following link:</p>
-        <pre style="overflow-x:scroll; font-family:monospace"><a href="/calendar.ics">https://badjunk.nomeata.de/calendar.ics</a></pre>
+        <p>You can import the upcoming dates into your calendar app, using the following link (in iCalender format):</p>
+        <pre style="overflow-x:scroll; font-family:monospace"><a href="/calendar.ics">https://badjunk.nomeata.de/calendar.ics</a><br/>&nbsp;</pre>
+        {userCalendar}
         </div>
         </div>
        </div>
@@ -59,6 +60,13 @@ instance View IndexView where
        </div>
       </div>
     |]
+      where
+        userCalendar = case fromFrozenContext :: Maybe SessionData of
+            Just (SessionData {user = user}) -> [hsx|
+              <p>A calendar with just the events that <em>you</em> have signed up for can be found here:</p>
+              <pre style="overflow-x:scroll; font-family:monospace"><a href={"/calendar-" <> show (user.id) <> ".ics"}>https://badjunk.nomeata.de/calendar-{user.id}.ics</a><br/>&nbsp;</pre>
+             |]
+            _ -> [hsx||]
 
 actWarning :: Html
 actWarning = case fromFrozenContext :: Maybe SessionData of

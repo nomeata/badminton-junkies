@@ -10,7 +10,7 @@ data StaticController = WelcomeAction deriving (Eq, Show, Data)
 
 data RegistrationsController
     = RegistrationsAction
-    | CalendarAction
+    | CalendarAction { calendarUser :: Maybe (Id User) }
     | TrialsAction
     | PastAction { page :: Maybe Integer }
     | RegisterAction { fromTrial :: !Text }

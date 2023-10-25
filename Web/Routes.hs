@@ -5,7 +5,8 @@ import Web.Types
 
 instance CanRoute RegistrationsController where
   parseRoute' = choice
-    [ string "/calendar.ics" <* endOfInput >> pure CalendarAction
+    [ CalendarAction Nothing <$ string "/calendar.ics" <* endOfInput
+    , CalendarAction . Just <$> (string "/calendar-" *> parseId <* string ".ics" <* endOfInput)
     , autoRoute
     ]
 
