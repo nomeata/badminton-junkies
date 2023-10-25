@@ -22,9 +22,11 @@ renderCalendar (CalendarView {..}) = printICalendar def cal
       }
 
     events = [
-        let desc = "Registered are are:\\n" <> T.concat [
-                T.fromStrict $ show n <> ". " <> regName reg <> "\\n"
+        let desc = "Registered are:\n" <> T.concat [
+                T.fromStrict $ show n <> ". " <> regName reg <> "\n"
              | (n, reg) <- zip [1..playSlots+1] regs ]
+            summary = T.fromStrict $
+               "🏸 Badminton! (" <> show (min 9 (length regs)) <> "🙋)"
         in VEvent
         { veDTStamp = DTStamp now def
         , veUID = UID (T.fromStrict $ show (pd_date pd) <> "@badjunk.nomeata.de") def
@@ -39,7 +41,7 @@ renderCalendar (CalendarView {..}) = printICalendar def cal
         , vePriority = def
         , veSeq = def
         , veStatus  = Nothing
-        , veSummary  = Nothing
+        , veSummary = Just $ Summary summary def def def
         , veTransp = def
         , veUrl  = Nothing
         , veRecurId  = Nothing
