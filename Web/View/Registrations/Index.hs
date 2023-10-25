@@ -34,21 +34,17 @@ instance View IndexView where
         </div>
        </div>
 
-       <!--
        <div class="col-lg-4">
         <div class="card mb-4 box-shadow md-4">
         <div class="card-header">
-        <h2>TODO</h2>
+        <h2>Calendar</h2>
         </div>
         <div class="card-body">
-        <p>This website is work-in-progress. The following features are missing:</p>
-        <ul>
-          <li>Viewing past line-ups.</li>
-        </ul>
+        <p>You can import the upcoming dates into your calendar app, using the following link:</p>
+        <pre style="overflow-x:scroll; font-family:monospace"><a href="/calendar.ics">https://badjunk.nomeata.de/calendar.ics</a></pre>
         </div>
         </div>
        </div>
-       -->
 
        <div class="col-lg-4">
         <div class="card mb-4 box-shadow md-4">
