@@ -121,7 +121,7 @@ instance Controller RegistrationsController where
                 Nothing -> False) regs) upcoming_dates
             Nothing -> upcoming_dates
 
-        respondAndExit $ responseLBS status200 [(hContentType, "text/calendar")] $
+        respondAndExit $ responseLBS status200 [(hContentType, "text/calendar; charset=UTF-8")] $
            renderCalendar CalendarView { .. }
 
     action RegisterAction { fromTrial } = do
