@@ -2,8 +2,7 @@
     inputs = {
         # Here you can adjust the IHP version of your project
         # You can find new releases at https://github.com/digitallyinduced/ihp/releases
-        # 1.1+a few
-        ihp.url = "github:digitallyinduced/ihp/217c1aaef7877220cc510714a81e25be2f019d22";
+        ihp.url = "github:digitallyinduced/ihp/v1.2";
         nixpkgs.follows = "ihp/nixpkgs";
         flake-parts.follows = "ihp/flake-parts";
         devenv.follows = "ihp/devenv";
