@@ -127,7 +127,9 @@ instance Controller RegistrationsController where
     action RegisterAction { fromTrial } = do
         needAuth fromTrial
 
-        let date = param @UTCTime "date"
+        date <- case paramOrNothing @UTCTime "date" of
+            Just date -> pure date
+            Nothing -> err fromTrial $ "Please select one of the playing dates"
         sd <- fromMaybe (error "should not happen") <$> currentSD
 
         isPlayingDateOpen fromTrial date
