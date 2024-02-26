@@ -59,23 +59,12 @@ instance Controller SessionsController where
                                           |> set #lastLogin now
                                           |> updateRecord
                                 Nothing -> do
-                                    -- Transition period: Try to match by name until the new buhlid is used everywhere
-                                    mbuser <- query @User |> filterWhere (#fullname, fullName) |> fetchOneOrNothing
-                                    case mbuser of
-                                        Just user' -> do
-                                            now <- getCurrentTime
-                                            -- Store new buhlid
-                                            user' |> set #buhlId buhlId
-                                                  |> set #email (Just email)
-                                                  |> set #lastLogin now
-                                                  |> updateRecord
-                                        Nothing -> do
-                                            -- new user
-                                            newRecord @User
-                                                |> set #fullname fullName
-                                                |> set #buhlId buhlId
-                                                |> set #email (Just email)
-                                                |> createRecord
+                                    -- new user
+                                    newRecord @User
+                                        |> set #fullname fullName
+                                        |> set #buhlId buhlId
+                                        |> set #email (Just email)
+                                        |> createRecord
 
                         setSuccessMessage $ "Welcome, " <> fullName
                         setSession "userid" (user |> get #id)
