@@ -13,6 +13,15 @@ instance Controller SessionsController where
             other_users <- query @User
                 |> orderByAsc #fullname
                 |> fetch
+            other_users :: [User] <- sqlQuery
+                "SELECT * FROM users \
+                \WHERE id IN (\
+                  \SELECT player_user \
+                  \ FROM registrations \
+                  \ WHERE date > NOW() - interval '3 months' \
+                \  ) \
+                \AND id != ? \
+                \ORDER BY fullname DESC" (Only sessionData.user.id)
             render EditView { .. }
         Nothing -> do
             -- User is not logged in
@@ -20,8 +29,6 @@ instance Controller SessionsController where
             render LoginView { .. }
 
     action CreateSessionAction = do
-        other_users <- query @User |> fetch
-
         let login_data = newRecord @LoginData
               |> fill @["email","password"]
               |> validateField #email isEmail
