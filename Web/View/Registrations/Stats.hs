@@ -15,9 +15,12 @@ instance View StatsView where
         {forEach regCount row}
         </tbody>
         </table>
+        <p>In total, members played {memberCount} times and trials played {trialCount} times.</p>
       |]
       -- This is ugly...
       where
+        memberCount = length [() | (Left _,_) <- regCount]
+        trialCount = length [() | (Right _,_) <- regCount]
         max = maximum (map snd regCount)
         rel c = c * 100 `div` max
         name (Left u) = userName u
