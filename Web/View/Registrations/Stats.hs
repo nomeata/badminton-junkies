@@ -19,8 +19,8 @@ instance View StatsView where
       |]
       -- This is ugly...
       where
-        memberCount = length [() | (Left _,_) <- regCount]
-        trialCount = length [() | (Right _,_) <- regCount]
+        memberCount = sum [n | (Left _,n) <- regCount]
+        trialCount = sum [n | (Right _,n) <- regCount]
         max = maximum (map snd regCount)
         rel c = c * 100 `div` max
         name (Left u) = userName u
