@@ -51,9 +51,10 @@ in
     ensureUsers = [
       {
         name = "shipadmin";
-        ensurePermissions = {
-          "DATABASE defaultdb" = "ALL PRIVILEGES";
-        };
+        # removed with IHP 1.3
+        # ensurePermissions = {
+        #   "DATABASE defaultdb" = "ALL PRIVILEGES";
+        # };
       }
     ];
     # Set to true if you want to access your database from an external database manager like Beekeper Studio
