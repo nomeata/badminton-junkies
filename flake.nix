@@ -2,7 +2,7 @@
     inputs = {
         # Here you can adjust the IHP version of your project
         # You can find new releases at https://github.com/digitallyinduced/ihp/releases
-        ihp.url = "github:digitallyinduced/ihp/v1.2";
+        ihp.url = "github:digitallyinduced/ihp/v1.3";
         nixpkgs.follows = "ihp/nixpkgs";
         flake-parts.follows = "ihp/flake-parts";
         devenv.follows = "ihp/devenv";
@@ -35,7 +35,14 @@
                         wreq
                         tagsoup
                         modern-uri
-                        iCalendar
+                        ((pkgs.haskell.lib.markUnbroken iCalendar).overrideAttrs {
+                          src = pkgs.fetchFromGitHub {
+                            owner = "nomeata";
+                            repo = "iCalendar";
+                            rev = "82f9d0b33e4f9e81f04f25ff34bd872c56d7045c";
+                            hash = "sha256-HZfYCVkjp0F9cbhQHIW9s4RWiwn5K1Gqe0X/di7yL3A=";
+                          };
+                        })
                     ];
                 };
             };
