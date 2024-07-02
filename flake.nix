@@ -49,14 +49,55 @@
 
            flake.nixosConfigurations."badjunk" = nixpkgs.lib.nixosSystem {
              system = "x86_64-linux";
-             specialArgs = inputs // {
-               environment = "production";
-               ihp-migrate = self.packages.x86_64-linux.migrate;
-               ihpApp = self.packages.x86_64-linux.default;
-             };
+             specialArgs = inputs;
              modules = [
-               ./nixos/configuration.nix
-             ];
+               "${nixpkgs}/nixos/modules/profiles/qemu-guest.nix"
+               ihp.nixosModules.appWithPostgres
+               ({ pkgs, ... }: {
+
+                   boot.loader.grub.device = "/dev/sda";
+                   boot.initrd.availableKernelModules = [ "ata_piix" "uhci_hcd" "xen_blkfront" "vmw_pvscsi" ];
+                   boot.initrd.kernelModules = [ "nvme" ];
+                   fileSystems."/" = { device = "/dev/sda1"; fsType = "ext4"; };
+
+                   nix.settings.substituters = [
+                     "https://digitallyinduced.cachix.org"
+                     "https://cache.garnix.io"
+                   ];
+                   nix.settings.trusted-public-keys = [
+                     "digitallyinduced.cachix.org-1:y+wQvrnxQ+PdEsCt91rmvv39qRCYzEgGQaldK26hCKE="
+                     "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
+                   ];
+
+                   services.openssh.enable = true;
+                   services.openssh.settings.PermitRootLogin = "prohibit-password";
+                   users.users.root.openssh.authorizedKeys.keys = [''ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJRd0CZZQXyKTEQSEtrIpcTg15XEoRjuYodwo0nr5hNj jojo@kirk'' ];
+
+                   security.acme.defaults.email = "mail@joachim-breitner.de";
+
+                   networking.firewall.allowedTCPPorts = [ 80 22 443 ];
+
+                   systemd.services.worker.enable = pkgs.lib.mkForce false;
+                   services.ihp = {
+                       httpsEnabled = true;
+                       domain = "badjunk.nomeata.de";
+                       migrations = ./Application/Migration;
+                       schema = ./Application/Schema.sql;
+                       fixtures = ./Application/Fixtures.sql;
+                       sessionSecret = "xxx";
+                       minimumRevision = 1674294934;
+                   };
+
+                   # Add swap to avoid running out of memory during builds
+                   # Useful if your server have less than 4GB memory
+                   #swapDevices = [ { device = "/swapfile"; size = 8192; } ];
+
+                   # This should reflect the nixos version from the NixOS AMI initally installed
+                   # After the initial install, it should not be changed. Otherwise e.g. the postgres
+                   # server might need a manual data migration if NixOS changes the default postgres version
+                   system.stateVersion = "23.05";
+               })
+              ];
            };
         };
 }
