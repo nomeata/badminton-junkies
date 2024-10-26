@@ -95,10 +95,10 @@ instance Controller RegistrationsController where
 
         render StatsView {..}
 
-    action (CalendarAction mbuid) = do
+    action (CalendarAction mbUserId) = do
         now <- getCurrentTime
 
-        forM_ mbuid $ \uid ->
+        forM_ mbUserId $ \uid ->
             fetchOneOrNothing uid >>= \case
                 Just _ -> pure ()
                 Nothing -> respondAndExit $
@@ -115,7 +115,7 @@ instance Controller RegistrationsController where
             pure (pd, regs)
             )
 
-        upcoming_dates <- return $ case mbuid of
+        upcoming_dates <- return $ case mbUserId of
             Just uid -> filter (\(_, regs) -> any (\r -> case r.playerUser of
                 Just u -> u.id == uid
                 Nothing -> False) regs) upcoming_dates
