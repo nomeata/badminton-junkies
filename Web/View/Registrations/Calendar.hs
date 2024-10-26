@@ -60,7 +60,7 @@ renderEvent mbUserId now pd regs = VEvent
       }
   where
     pos | Just uid <- mbUserId
-        = listToMaybe [ n | (n, reg) <- zip [1..playSlots+1] regs, Just u <- pure reg.playerUser, u.id == uid ]
+        = listToMaybe [ n | (n, reg) <- zip [1..] regs, Just u <- pure reg.playerUser, u.id == uid ]
         | otherwise
         = Nothing
     summary = T.fromStrict $ case pos of
@@ -69,4 +69,4 @@ renderEvent mbUserId now pd regs = VEvent
              | otherwise -> "🏸 Badminton! (" <> show n <> "/" <> show (length regs) <> " ⏳)"
     desc = "Registered are:\n" <> T.concat [
         T.fromStrict $ show n <> ". " <> regName reg <> "\n"
-     | (n, reg) <- zip [1..playSlots+1] regs ]
+     | (n, reg) <- zip [1..] regs ]
