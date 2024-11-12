@@ -246,14 +246,14 @@ upcomingDates = do
        , pd_trial_reg_opens =
             localTimeToUTCTZ tz (LocalTime (trial_reg_days_diff `addDays` day) trial_reg_time)
        , pd_reg_block_over =
-            localTimeToUTCTZ tz (LocalTime day (TimeOfDay 20 30 00))
+            localTimeToUTCTZ tz (LocalTime day (TimeOfDay 22 30 00))
        }
-     | day <- [today .. 6 `addDays` today]
+     | day <- [(-1) `addDays` today .. 5 `addDays` today]
      , (time, reg_days_diff, reg_time, trial_reg_days_diff, trial_reg_time, hours) <-
         case dayOfWeek day of
-            Tuesday -> [ (TimeOfDay 17 00 00, -6, TimeOfDay 20 30 00, -1, TimeOfDay 17 00 00, 2) ]
-            Sunday ->  [ (TimeOfDay 14 00 00, -6, TimeOfDay 20 30 00, -1, TimeOfDay 14 00 00, 3)
-                       , (TimeOfDay 17 00 00, -6, TimeOfDay 20 30 00, -1, TimeOfDay 17 00 00, 3) ]
+            Tuesday -> [ (TimeOfDay 17 00 00, -2, TimeOfDay 20 30 00, -1, TimeOfDay 17 00 00, 2) ]
+            Sunday ->  [ (TimeOfDay 14 00 00, -5, TimeOfDay 20 30 00, -1, TimeOfDay 14 00 00, 3)
+                       , (TimeOfDay 17 00 00, -5, TimeOfDay 20 30 00, -1, TimeOfDay 17 00 00, 3) ]
             _      ->  []
      ]
 
