@@ -84,7 +84,7 @@
                        migrations = ./Application/Migration;
                        schema = ./Application/Schema.sql;
                        fixtures = ./Application/Fixtures.sql;
-                       sessionSecret = "xxx";
+                       sessionSecret = "9ibB/PzkOFW05/1/dnraTmCjrjUYx7u8LNI9OuHMiKqkgzmXeFuhhFp8v7uscbofCJOo39SRfmhQfNLyydYRjqmguTF3Jefyxm4ZM3JNhO7+qhw9IX/bcAPpxVckPkN6";
                        minimumRevision = 1674294934;
                    };
 

@@ -26,7 +26,7 @@ instance View IndexView where
         </div>
         <div class="card-body">
         <p>Once you have logged in, you can sign up with the big buttons on top. The first 9 members to register get to play, if you add yourself later you are on the waitlist.</p>
-        <p>You can sign up for one play time at a time. If you have just played, wait until 20:30 before signing up for the next play time.</p>
+        <p>Sign-up for the next playing day opens at 20:30. You can sign up for one play time at a time. If you have just played, wait until 22:30 before signing up for the next play time.</p>
         <p>You can unregister. People on the waitlist will then move up. Please also message the group to tell them that a spot is now open.</p>
         <p>To change your nickname or register other members, click the 🛠 button in the top-right corner. To sign up trials (“Schnupperer”), use the 👃 page.</p>
         <p>The system keeps a log of registrations and removals.</p>
