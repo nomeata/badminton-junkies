@@ -21,6 +21,7 @@
                     projectPath = ./.;
                     packages = with pkgs; [
                         # Native dependencies, e.g. imagemagick
+                        ghcid
                     ];
                     haskellPackages = p: with p; [
                         # Haskell dependencies go here
