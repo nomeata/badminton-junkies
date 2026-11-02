@@ -63,11 +63,11 @@
 
                    nix.settings.substituters = [
                      "https://digitallyinduced.cachix.org"
-                     "https://cache.garnix.io"
+                     "https://cache.digitallyinduced.com/public"
                    ];
                    nix.settings.trusted-public-keys = [
                      "digitallyinduced.cachix.org-1:y+wQvrnxQ+PdEsCt91rmvv39qRCYzEgGQaldK26hCKE="
-                     "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
+                     "public:kR6JCoqAIMaO4s+EdDGh+jsHEHnoLq4ZLJPMCo0hcIQ="
                    ];
 
                    services.openssh.enable = true;
